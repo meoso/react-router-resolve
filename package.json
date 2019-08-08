@@ -1,0 +1,42 @@
+{
+  "name": "@mcklabs/react-router-resolve",
+  "version": "0.1.0",
+  "description": "React Router wrapper for resolving models to routes in a more sane way.",
+  "main": "dist/index.js",
+  "author": "timothy.sweet@mckesson.com",
+  "license": "UNLICENSED",
+  "scripts": {
+    "build": "webpack",
+    "docs": "jsdoc2md src/*.jsx > README.md"
+  },
+  "publishConfig": {
+    "registry": "https://tools.mckesson.com/artifactory/api/npm/mcklbs-release-repo/"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
+    "@babel/polyfill": "^7.4.4",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/preset-stage-0": "^7.0.0",
+    "@babel/register": "^7.4.4",
+    "babel-eslint": "^10.0.2",
+    "babel-loader": "^8.0.6",
+    "eslint": "^6.0.1",
+    "eslint-config-babel": "^9.0.0",
+    "eslint-config-google": "^0.13.0",
+    "eslint-config-react": "^1.1.7",
+    "eslint-plugin-react": "^7.14.2",
+    "jsdoc": "^3.6.3",
+    "jsdoc-to-markdown": "^5.0.0",
+    "react": "",
+    "react-dom": "",
+    "webpack": "^4.35.2",
+    "webpack-cli": "^3.3.5",
+    "webpack-dev-server": "^3.7.2"
+  },
+  "peerDependencies": {
+    "react-router": "^5.0.1"
+  }
+}
