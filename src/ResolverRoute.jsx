@@ -157,7 +157,7 @@ ResolveRoute.contextTypes = {
 
 ResolveRoute.propTypes = {
 
-    children: PropTypes.all,
+    children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
     /**
      * @memberof Route
      * @description Override the store from the default context provider.
@@ -212,7 +212,7 @@ ResolveRoute.propTypes = {
      *     }
      * }}
      */
-    resolve: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+    resolve: PropTypes.object,
     /**
      * @name component
      * @memberof Route

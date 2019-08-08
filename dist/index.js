@@ -153,21 +153,21 @@ var external_react_router_dom_ = __webpack_require__(2);
  *
  * @example @lang js
  * window.location.search = '?values=foo&values=bar&values=hello&values=world';
- * const params = toParams(window.location.search);
+ * const params = toParams(window.location.search, {});
  * console.log(params) // {values: ["foo","bar","hello", "world"]}
  *
  * @example @lang js
- * searchOptions={{
- *     values: parseInt
- * }}
  * window.location.search = '?values=1&values=2&values=3&values=5&values=7';
+ * const params = toParams(window.location.search, {
+ *     values: parseInt
+ * });
  * console.log(params) // {values: [1, 2, 3, 5, 7]}
  *
  * @example @lang js
- * searchOptions={{
- *     values: parseInt
- * }}
  * window.location.search = '?answer=42';
+ * const params = toParams(window.location.search, {
+ *     answer: parseInt
+ * });
  * console.log(params) // {answer: 42}
  */
 var arrayParser = function arrayParser(val, key, params) {
@@ -203,17 +203,26 @@ var parseBool = function parseBool(val) {
 /**
  * @function toParams
  * @param {String} str
+ * @param {Object} options custom parser functions based on the key name
  * @description Converts URL parameters to a Object collection of key/value pairs
  * Decodes encoded url characters to back to normal strings.
  * @example <caption>convert query string to object:</caption>
- * import {toParams} from '@helio/utils';
- * let paramsObject = toParams('#?foo=bar&hello=world&hello=array&unsafe=I%20am%20an%20unsafe%20string');
+ * import {toParams} from '@mcklabs/react-router-resolve';
+ * let paramsObject = toParams('?foo=bar&hello=world&hello=array&unsafe=I%20am%20an%20unsafe%20string');
  *
- * paramsObject == {
- *  foo: 'bar',
- *  hello: ['world', 'array'],
- *  unsafe: 'I am an unsafe string'
- * };
+ * console.log(paramsObject) // { foo: 'bar', hello: ['world', 'array'], unsafe: 'I am an unsafe string'}
+ * @example <caption>pass an optional parser object</caption>
+ * import {toParams} from '@mcklabs/react-router-resolve';
+ * let paramsObject = toParams('?intvals=1&intvals=2&intvals=3', {
+ *     intvals: parseInt
+ * });
+ *
+ * console.log(paramsObject) // { intvals: [ 1, 2, 3 ] }
+ * @example <caption>without psassing an optional parser object</caption>
+ * import {toParams} from '@mcklabs/react-router-resolve';
+ * let paramsObject = toParams('?intvals=1&intvals=2&intvals=3');
+ *
+ * console.log(paramsObject) // { intvals: [ "1", "2", "3" ] }
  */
 
 
@@ -300,7 +309,7 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
  * See [ReactRouter:Route]{@link https://reacttraining.com/react-router/web/api/Route}
  * for standard options documentation
  *
- * @example @lang jsx
+ * @example @lang jsx <caption>Define your route as you would using react-router</caption>
  * <Route
  *     path="/demo/:id"
  *     // parsers for query parameters to convert something like "1" into the integer 1. These are made available on
@@ -501,7 +510,7 @@ ResolverRoute_ResolveRoute.contextTypes = {
   store: external_prop_types_default.a.object
 };
 ResolverRoute_ResolveRoute.propTypes = {
-  children: external_prop_types_default.a.all,
+  children: external_prop_types_default.a.oneOfType([external_prop_types_default.a.node, external_prop_types_default.a.func]),
 
   /**
    * @memberof Route
@@ -519,7 +528,7 @@ ResolverRoute_ResolveRoute.propTypes = {
    * @description executed when the route is activated upon a url match.
    * It is simply a notification channel for you to decide what to do
    * such as conditionally dispatching an action through redux or triggering other events.
-   * @example @lang js
+   * @example @lang js <caption>define the onEnter callback fn</caption>
    * onEnter={(store) => {
    *     if (!store.getState().someData) {
    *         store.dispatch({ type: "SOME_ACTION" });
@@ -559,7 +568,7 @@ ResolverRoute_ResolveRoute.propTypes = {
    *     }
    * }}
    */
-  resolve: external_prop_types_default.a.oneOfType([external_prop_types_default.a.node, external_prop_types_default.a.func]),
+  resolve: external_prop_types_default.a.object,
 
   /**
    * @name component
@@ -593,8 +602,7 @@ ResolverRoute_ResolveRoute.propTypes = {
    * name and the function parses that property and returns the value
    * Parsers for query parameters to convert something like "1" into the integer 1
    * These are made available on props.match.search
-   * @example @lang js
-   * // given this property configuration.
+   * @example @lang js <caption>given this property configuration.</caption>
    * searchOptions={{
    *     num: parseInt,
    *     edit: parseBool
