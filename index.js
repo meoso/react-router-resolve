@@ -10,9 +10,8 @@ import {
 } from './src/Router';
 
 import {
-    getFromObj,
-    template,
     toParams,
+    arrayParser,
     parseBool
 } from './src/utils';
 
@@ -30,8 +29,7 @@ export {
     Router,
     Redirect,
     Link,
-    getFromObj,
-    template,
     toParams,
+    arrayParser,
     parseBool
 };

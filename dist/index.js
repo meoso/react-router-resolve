@@ -1,10 +1,10 @@
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("react"), require("react-router-dom"), require("prop-types"));
+		module.exports = factory(require("prop-types"), require("react"), require("react-router-dom"));
 	else if(typeof define === 'function' && define.amd)
-		define(["react", "react-router-dom", "prop-types"], factory);
+		define(["prop-types", "react", "react-router-dom"], factory);
 	else {
-		var a = typeof exports === 'object' ? factory(require("react"), require("react-router-dom"), require("prop-types")) : factory(root["react"], root["react-router-dom"], root["prop-types"]);
+		var a = typeof exports === 'object' ? factory(require("prop-types"), require("react"), require("react-router-dom")) : factory(root["prop-types"], root["react"], root["react-router-dom"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
 })(window, function(__WEBPACK_EXTERNAL_MODULE__0__, __WEBPACK_EXTERNAL_MODULE__1__, __WEBPACK_EXTERNAL_MODULE__2__) {
@@ -127,18 +127,50 @@ module.exports = __webpack_require__(4);
 __webpack_require__.r(__webpack_exports__);
 
 // EXTERNAL MODULE: external "react"
-var external_react_ = __webpack_require__(0);
+var external_react_ = __webpack_require__(1);
 var external_react_default = /*#__PURE__*/__webpack_require__.n(external_react_);
 
 // EXTERNAL MODULE: external "prop-types"
-var external_prop_types_ = __webpack_require__(2);
+var external_prop_types_ = __webpack_require__(0);
 var external_prop_types_default = /*#__PURE__*/__webpack_require__.n(external_prop_types_);
 
 // EXTERNAL MODULE: external "react-router-dom"
-var external_react_router_dom_ = __webpack_require__(1);
+var external_react_router_dom_ = __webpack_require__(2);
 
 // CONCATENATED MODULE: ./src/utils.js
-var defaultParser = function defaultParser(val, key, params) {
+/**
+ * @function arrayParser
+ * @param {Object} val the value to parse
+ * @param {String} key the name of the value to parse
+ * @param {Object} params all of the parameters that have been parsed so far.
+ * @returns {Boolean} returns the currently parsed value.
+ * @description In the event that the search string has multiple values with the same key
+ * it will convert that into an array of those values for the given key.
+ *
+ * While there is no defined standard in [RFC 3986 Section 3.4]{@link https://tools.ietf.org/html/rfc3986#section-3.4},
+ * most web frameworks accept and serialize them in the following manner as outlined
+ * in [MSDN]{@link https://docs.microsoft.com/en-us/previous-versions/iis/6.0-sdk/ms524784(v=vs.90)}
+ *
+ * @example @lang js
+ * window.location.search = '?values=foo&values=bar&values=hello&values=world';
+ * const params = toParams(window.location.search);
+ * console.log(params) // {values: ["foo","bar","hello", "world"]}
+ *
+ * @example @lang js
+ * searchOptions={{
+ *     values: parseInt
+ * }}
+ * window.location.search = '?values=1&values=2&values=3&values=5&values=7';
+ * console.log(params) // {values: [1, 2, 3, 5, 7]}
+ *
+ * @example @lang js
+ * searchOptions={{
+ *     values: parseInt
+ * }}
+ * window.location.search = '?answer=42';
+ * console.log(params) // {answer: 42}
+ */
+var arrayParser = function arrayParser(val, key, params) {
   var current = params[key];
 
   if (current) {
@@ -153,6 +185,13 @@ var defaultParser = function defaultParser(val, key, params) {
 
   return current;
 };
+/**
+ * @function parseBool
+ * @param {String|Integer} val the value to parse as a boolean
+ * @returns {Boolean} returns true if the val is "true" or the integer 1 ignoring case, otherwise, false.
+ * @description convenience method for boolean attributes.
+ */
+
 
 var parseBool = function parseBool(val) {
   if (val !== 1 && val.toLowerCase() !== "true") {
@@ -162,10 +201,10 @@ var parseBool = function parseBool(val) {
   return true;
 };
 /**
- * Converts URL parameters to a Object collection of key/value pairs
- * Decodes encoded url characters to back to normal strings.
+ * @function toParams
  * @param {String} str
- *
+ * @description Converts URL parameters to a Object collection of key/value pairs
+ * Decodes encoded url characters to back to normal strings.
  * @example <caption>convert query string to object:</caption>
  * import {toParams} from '@helio/utils';
  * let paramsObject = toParams('#?foo=bar&hello=world&hello=array&unsafe=I%20am%20an%20unsafe%20string');
@@ -174,7 +213,6 @@ var parseBool = function parseBool(val) {
  *  foo: 'bar',
  *  hello: ['world', 'array'],
  *  unsafe: 'I am an unsafe string'
- *
  * };
  */
 
@@ -189,62 +227,14 @@ var toParams = function toParams(str) {
     if (innerParts.length !== 2) return;
     var paramKey = decodeURIComponent(innerParts[0]);
     var paramVal = decodeURIComponent(innerParts[1]);
-    var parser = options[paramKey] || defaultParser;
-    params[paramKey] = parser(paramVal, paramKey, params);
+
+    var parser = options[paramKey] || function () {
+      return paramVal;
+    };
+
+    params[paramKey] = arrayParser(parser(paramVal, paramKey, params), paramKey, params);
   });
   return params;
-};
-/**
- * Returns the value of an object via the path as a string
- * @param {String} path
- * @param {Object} obj Object to find the property in
- * @param {String} fb Fallback string when not found
- *
- * @example
- * let result = getFromObj('hello.foo', {
- *  hello: {
- *    foo: 'bar'
- *  }
- * });
- * result == 'bar';
- */
-
-
-var getFromObj = function getFromObj(path, obj) {
-  var fb = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "${".concat(path, "}");
-  return path.split('.').reduce(function (res, key) {
-    return res[key] != null ? res[key] : fb;
-  }, obj);
-};
-/**
- * Processes a string formatted like an ES6 template against an object
- * @param {String} template the string template
- * @param {Object} map Key/Value pairs to process the string against
- * @param {String} fallback they string fallback when the value is missing.
- *
- * @example
- * let result = template('I am a string literal formatted ${message.label}.', {
- *  message: {
- *    label: 'to look like an ES6 template'
- *  }
- * });
- *
- * result == 'I am a string literal formatted to look like an ES6 template.';
- */
-
-
-var template = function template(tmpl, map, fallback) {
-  var root = Object.assign({
-    "this": map
-  }, map); // if (tmpl.match(/\$\{\s*this\s*\./gm)) {
-  //   // cant enable this until we drop IE support. for now we can only do substitutions.
-  //   // return renderLiteral(tmpl, map);
-  // }
-
-  return tmpl && tmpl.replace(/\$\{.+?}/g, function (match) {
-    var path = match.substr(2, match.length - 3).trim();
-    return getFromObj(path, root, fallback);
-  });
 };
 
 
@@ -252,9 +242,18 @@ var template = function template(tmpl, map, fallback) {
 
 
 
-var withSearch_withSearch = function withSearch(WrappedComponent, paramOptions) {
+/**
+ * @function withSearch
+ * @param {Component} WrappedComponent
+ * @param {Object} searchOptions @see searchOptions
+ * @description
+ * Higher-order component to provide the search parameters as an object,
+ * The result of @see toParams are made available as props.match.search.
+ */
+
+var withSearch_withSearch = function withSearch(WrappedComponent, searchOptions) {
   return Object(external_react_router_dom_["withRouter"])(function (props) {
-    var search = toParams(window.location.search, paramOptions);
+    var search = toParams(window.location.search, searchOptions);
     props.match.search = search;
     return external_react_default.a.createElement(WrappedComponent, props);
   });
@@ -294,6 +293,60 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 
 
+/**
+ * @class Route
+ * @extends {ReactRouter:Route}
+ * @description Provides a cleaner data resolution scheme for routed applications.
+ * See [ReactRouter:Route]{@link https://reacttraining.com/react-router/web/api/Route}
+ * for standard options documentation
+ *
+ * @example @lang jsx
+ * <Route
+ *     path="/demo/:id"
+ *     // parsers for query parameters to convert something like "1" into the integer 1. These are made available on
+ *     // props.match.search
+ *     searchOptions={{
+ *         num: parseInt,
+ *         edit: parseBool
+ *     }}
+ *     // onEnter triggers when the route is activated by a url match.
+ *     onEnter={(store) => {
+ *         // in this example, we are triggering a redux action, but you can do anything you want.
+ *         // "store" comes from the provided context
+ *         store.dispatch({ type: "SOME_ACTION" });
+ *     }}
+ *     // resolve is where you define the properties you want to wait on before rendering the component.
+ *     resolve={{
+ *         itemList: (state, ownProps) => {
+ *             return new Promise((resolve) => {
+ *               setTimeout(() => {
+ *                   resolve(JSON.stringify(['item one.', 'item two.', 'item three.']));
+ *               }, 4000);
+ *             });
+ *         },
+ *         thing: (state, ownProps) => {
+ *             //state could be a redux state or anything you have defined in context as "store"
+ *             // that follows a redux-style API
+ *             return state.stuff;
+ *         }
+ *     }}
+ *     // interstitial is for rendering something while waitng.
+ *     interstitial={({ match }) => {
+ *         return (<div>
+ *                     <h3>Loading...</h3>
+ *                     <div>{JSON.stringify(match, null, 2)}</div>
+ *                 </div>);
+ *     }}
+ *     // render and component properties work identically to the React Router Route:render props
+ *     // However, the props provided are decorated the the properties resolved by the "resolve" prop above
+ *     render={({ thing, itemList, match }) => {
+ *         return (<div>
+ *                     <list-component data-items={itemList}/>
+ *                     <search-params data-search={JSON.stringify(match.search)} />
+ *                     <div>{JSON.stringify(thing, null, 2)}</div>
+ *                 </div>);
+ *     }} />
+ */
 
 var ResolverRoute_ResolveRoute =
 /*#__PURE__*/
@@ -336,6 +389,13 @@ function (_React$Component) {
           };
           return _this;
         }
+        /**
+         * @memberof Route
+         * @description internal method that sets up the subscription to the store if available
+         * and then waits for model reoslution before rendering the component
+         * Also triggers the "onEnter" function property.
+         */
+
 
         _createClass(Resolver, [{
           key: "componentDidMount",
@@ -354,6 +414,16 @@ function (_React$Component) {
 
             this.props.onEnter(store, this.props);
           }
+          /**
+           * @memberof Route
+           * @description internal method that gets the existing state from the context store.
+           * Then, it iterates through the keys of the "resolve" property and, if necessary,
+           * converts them to a function that returns the value set for that key. Then, it resolves
+           * the result of those functions as promises. Once all the promises have resolved,
+           * it sets the internal state to the result of the newState via setState(), which
+           * triggers the internal render function.
+           */
+
         }, {
           key: "waitForResolve",
           value: function waitForResolve() {
@@ -389,6 +459,15 @@ function (_React$Component) {
               });
             });
           }
+          /**
+           * @memberof Route
+           * @description internal method that renders wither the component from the
+           * render or component props, with render taking precedence. It then passes all the
+           * combined props and the resolved state as properties to the component
+           * and provides any children elements defined in the route declaration
+           * to the component to render as props.children.
+           */
+
         }, {
           key: "render",
           value: function render() {
@@ -400,9 +479,6 @@ function (_React$Component) {
         return Resolver;
       }(external_react_default.a.Component);
 
-      ResolveRoute.defaultProps = {
-        onEnter: function onEnter(store, props) {}
-      };
       var ResolveWithSearch = withSearch_withSearch(Resolver, searchOptions);
       return external_react_default.a.createElement(external_react_router_dom_["Route"], _extends({}, ownProps, {
         render: function render(props) {
@@ -418,13 +494,124 @@ function (_React$Component) {
 ResolverRoute_ResolveRoute.defaultProps = {
   interstitial: function interstitial() {
     return '';
-  }
+  },
+  onEnter: function onEnter() {}
 };
 ResolverRoute_ResolveRoute.contextTypes = {
   store: external_prop_types_default.a.object
 };
 ResolverRoute_ResolveRoute.propTypes = {
+  children: external_prop_types_default.a.all,
+
+  /**
+   * @memberof Route
+   * @description Override the store from the default context provider.
+   * the store must adhere to the same redux-style API with "getState" and subscribe functions
+   */
+  store: external_prop_types_default.a.shape({
+    getState: external_prop_types_default.a.func.isRequired,
+    subscribe: external_prop_types_default.a.func.isRequired
+  }),
+
+  /**
+   * @name onEnter
+   * @memberof Route
+   * @description executed when the route is activated upon a url match.
+   * It is simply a notification channel for you to decide what to do
+   * such as conditionally dispatching an action through redux or triggering other events.
+   * @example @lang js
+   * onEnter={(store) => {
+   *     if (!store.getState().someData) {
+   *         store.dispatch({ type: "SOME_ACTION" });
+   *     }
+   * }}
+   */
+  onEnter: external_prop_types_default.a.func,
+
+  /**
+   * @name resolve
+   * @memberof Route
+   * @param {Object} state The result of internal context.store.getState();
+   * @param {Object} ownProps the combined props for the Route
+   * @description Object of key:{Object|Function} pairs that will be executed before the component is rendered.
+   * if the callback returns a promise, the interstitial component will be rnedered until the promise resolves.
+   * This allows you to make API calls that are async without worrying about your component not having
+   * the data it needs when rendering for the first time.
+   *
+   * It also allows for a better "data-down -> actions up" approach to UI component orchestration.
+   * By resolving the data based on route parameters before ever accessing the component, you can just pass
+   * properties down to child components and avoid internal component state. Any user interactions, such as
+   * a button click, which modifies the UI State, should be represented by a route. That means you can make
+   * the buttons being clicked anchor tag hrefs to different UI states.
+   * @example @lang js
+   *  resolve={{
+   *     itemList: (state, ownProps) => {
+   *         return new Promise((resolve) => {
+   *           setTimeout(() => {
+   *               resolve(JSON.stringify(['item one.', 'item two.', 'item three.']));
+   *           }, 4000);
+   *         });
+   *     },
+   *     thing: (state, ownProps) => {
+   *         //state could be a redux state or anything you have defined in context as "store"
+   *         // that follows a redux-style API
+   *         return state.stuff;
+   *     }
+   * }}
+   */
+  resolve: external_prop_types_default.a.oneOfType([external_prop_types_default.a.node, external_prop_types_default.a.func]),
+
+  /**
+   * @name component
+   * @memberof Route
+   * @description [React Router Route:component]{@link https://reacttraining.com/react-router/web/api/Route/component}
+   */
+  component: external_prop_types_default.a.oneOfType([external_prop_types_default.a.node, external_prop_types_default.a.func]),
+
+  /**
+   * @name render
+   * @memberof Route
+   * @description [React Router Route:render]{@link https://reacttraining.com/react-router/web/api/Route/render}
+   */
+  render: external_prop_types_default.a.oneOfType([external_prop_types_default.a.node, external_prop_types_default.a.func]),
+
+  /**
+   * @name interstitial
+   * @memberof Route
+   * @description component to render while waiting for properties defined in "resolve" to finish resolving.
+   * @example @lang js
+   * interstitial={({ match }) => {
+   *     return (<h3>Loading...</h3>);
+   * }}
+   */
   interstitial: external_prop_types_default.a.oneOfType([external_prop_types_default.a.node, external_prop_types_default.a.func]),
+
+  /**
+   * @name searchOptions
+   * @memberof Route
+   * @description Object of key:{Function} pairs where the key represents a url query parameter
+   * name and the function parses that property and returns the value
+   * Parsers for query parameters to convert something like "1" into the integer 1
+   * These are made available on props.match.search
+   * @example @lang js
+   * // given this property configuration.
+   * searchOptions={{
+   *     num: parseInt,
+   *     edit: parseBool
+   * }}
+   * window.location.search = "?edit=true&num=45";
+   * render={({ match }) => {
+   *     console.log(match.search.edit) // true
+   *     console.log(typeof match.search.edit) // 'boolean' insteadof 'string'
+   *     console.log(match.search.num) // 45
+   *     console.log(typeof match.search.num) // 'number' instead of 'string'
+   *     const stringified = JSON.stringify(match.search);
+   *     console.log(stringified) // '{"num": 2, "edit": false}';
+   *     return (<div>
+   *                 <search-params data-search={stringified} />
+   *             </div>);
+   * }} />
+   */
   searchOptions: external_prop_types_default.a.object
 };
 /* harmony default export */ var ResolverRoute = (ResolverRoute_ResolveRoute);
@@ -438,6 +625,14 @@ function Link_objectWithoutPropertiesLoose(source, excluded) { if (source == nul
 
 
 
+/**
+ * @class Redirect
+ * @extends {ReactRouter:Redirect}
+ * @description creates a Redirect for the browser to route to a different path while
+ * retaining the existing query string parameters on the url.
+ * [React Router Redirect]{@link https://reacttraining.com/react-router/web/api/Redirect}
+ */
+
 var Redirect = withSearch_withSearch(function (_ref) {
   var to = _ref.to,
       props = Link_objectWithoutProperties(_ref, ["to"]);
@@ -446,6 +641,16 @@ var Redirect = withSearch_withSearch(function (_ref) {
     to: "".concat(to).concat(props.location.search)
   }));
 });
+/**
+ *
+ * @class Link
+ * @extends {ReactRouter:Link}
+ * @description creates routable links using the React Router Link component that preserves
+ * the existing query parameters or creates external anchors when given a FQDN url.
+ * [React Router Link]{@link https://reacttraining.com/react-router/web/api/Link}
+ * TODO: implement this feature
+ */
+
 var Link = withSearch_withSearch(function (props) {
   return external_react_default.a.createElement(external_react_router_dom_["Link"], props);
 });
@@ -455,17 +660,47 @@ function Router_objectWithoutProperties(source, excluded) { if (source == null) 
 
 function Router_objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
+/* eslint-disable react/prop-types */
 
 
 
+/**
+ * @function withR3Options
+ * @param {Router} WrappedRouter @see Router @see BrowserRouter @see MemoryRouter @see StaticRouter @see HashRouter
+ * @description Higher order component intended to wrap React Router's *Router components to extend the functionality
+ */
 
-var Router_R3Router = function R3Router(WrappedRouter) {
+var Router_withR3Options = function withR3Options(WrappedRouter) {
   var ReactRouter = WrappedRouter;
+  /**
+   * @name ensureTrailingSlash
+   * @memberof Router
+   * @description ensures a trailing slash is applied to the url. at runtime,
+   * browser url will be converted to always end in "/". default is false.
+   *
+   * TODO: Implement
+   * @example @lang jsx
+   * <BrowserRouter ensureTrailingSlash={true} >
+   *     <App/>
+   * </BrowserRouter>,
+   */
+
+  /**
+   * @name defaultRoute
+   * @memberof Router
+   * @description when the basename route is hit (default "/"), the browser will
+   * automatically redirect to the defaultRoute specified. Default is undefined.
+   *
+   * @example @lang jsx
+   * <BrowserRouter defaultRoute="/demo/world" >
+   *     <App/>
+   * </BrowserRouter>,
+   */
+
   return function (_ref) {
     var children = _ref.children,
-        ensureTrailingSlash = _ref.ensureTrailingSlash,
         defaultRoute = _ref.defaultRoute,
-        ownProps = Router_objectWithoutProperties(_ref, ["children", "ensureTrailingSlash", "defaultRoute"]);
+        ownProps = Router_objectWithoutProperties(_ref, ["children", "defaultRoute"]);
 
     return external_react_default.a.createElement(ReactRouter, ownProps, defaultRoute && external_react_default.a.createElement(external_react_router_dom_["Route"], {
       exact: true,
@@ -479,12 +714,47 @@ var Router_R3Router = function R3Router(WrappedRouter) {
     }), children);
   };
 };
+/**
+ * @class BrowserRouter
+ * @extends ReactRouter:BrowserRouter
+ * @description Wrapper for React Router's BrowserRouter component that provides
+ * defaultRoute and ensureTrailingSlash options
+ */
 
-var BrowserRouter = Router_R3Router(external_react_router_dom_["BrowserRouter"]);
-var MemoryRouter = Router_R3Router(external_react_router_dom_["MemoryRouter"]);
-var StaticRouter = Router_R3Router(external_react_router_dom_["StaticRouter"]);
-var HashRouter = Router_R3Router(external_react_router_dom_["HashRouter"]);
-var Router = Router_R3Router(external_react_router_dom_["Router"]);
+
+var BrowserRouter = Router_withR3Options(external_react_router_dom_["BrowserRouter"]);
+/**
+ * @class MemoryRouter
+ * @extends ReactRouter:MemoryRouter
+ * @description Wrapper for React Router's MemoryRouter component that provides
+ * defaultRoute and ensureTrailingSlash options
+ */
+
+var MemoryRouter = Router_withR3Options(external_react_router_dom_["MemoryRouter"]);
+/**
+ * @class StaticRouter
+ * @extends ReactRouter:StaticRouter
+ * @description Wrapper for React Router's StaticRouter component that provides
+ * defaultRoute and ensureTrailingSlash options
+ */
+
+var StaticRouter = Router_withR3Options(external_react_router_dom_["StaticRouter"]);
+/**
+ * @class HashRouter
+ * @extends ReactRouter:HashRouter
+ * @description Wrapper for React Router's HashRouter component that provides
+ * defaultRoute and ensureTrailingSlash options
+ */
+
+var HashRouter = Router_withR3Options(external_react_router_dom_["HashRouter"]);
+/**
+ * @class Router
+ * @extends ReactRouter:Router
+ * @description Wrapper for React Router's base Router component that provides
+ * defaultRoute and ensureTrailingSlash options
+ */
+
+var Router = Router_withR3Options(external_react_router_dom_["Router"]);
 
 // CONCATENATED MODULE: ./index.js
 /* concated harmony reexport Route */__webpack_require__.d(__webpack_exports__, "Route", function() { return ResolverRoute; });
@@ -495,9 +765,8 @@ var Router = Router_R3Router(external_react_router_dom_["Router"]);
 /* concated harmony reexport Router */__webpack_require__.d(__webpack_exports__, "Router", function() { return Router; });
 /* concated harmony reexport Redirect */__webpack_require__.d(__webpack_exports__, "Redirect", function() { return Redirect; });
 /* concated harmony reexport Link */__webpack_require__.d(__webpack_exports__, "Link", function() { return Link; });
-/* concated harmony reexport getFromObj */__webpack_require__.d(__webpack_exports__, "getFromObj", function() { return getFromObj; });
-/* concated harmony reexport template */__webpack_require__.d(__webpack_exports__, "template", function() { return template; });
 /* concated harmony reexport toParams */__webpack_require__.d(__webpack_exports__, "toParams", function() { return toParams; });
+/* concated harmony reexport arrayParser */__webpack_require__.d(__webpack_exports__, "arrayParser", function() { return arrayParser; });
 /* concated harmony reexport parseBool */__webpack_require__.d(__webpack_exports__, "parseBool", function() { return parseBool; });
 
 

@@ -1,73 +1,82 @@
 ## Classes
 
 <dl>
-<dt><a href="#Link">Link</a> ⇐ <code>ReactRouterRedirect</code></dt>
+<dt><a href="#Redirect">Redirect</a> ⇐ <code>ReactRouter:Redirect</code></dt>
 <dd></dd>
-<dt><a href="#Link">Link</a> ⇐ <code>ReactRouterLink</code></dt>
+<dt><a href="#Link">Link</a> ⇐ <code>ReactRouter:Link</code></dt>
 <dd></dd>
-<dt><a href="#Route">Route</a> ⇐ <code>ReactRouterRoute</code></dt>
+<dt><a href="#Route">Route</a> ⇐ <code>ReactRouter:Route</code></dt>
+<dd></dd>
+<dt><a href="#BrowserRouter">BrowserRouter</a> ⇐ <code>ReactRouter:BrowserRouter</code></dt>
+<dd></dd>
+<dt><a href="#MemoryRouter">MemoryRouter</a> ⇐ <code>ReactRouter:MemoryRouter</code></dt>
+<dd></dd>
+<dt><a href="#StaticRouter">StaticRouter</a> ⇐ <code>ReactRouter:StaticRouter</code></dt>
+<dd></dd>
+<dt><a href="#HashRouter">HashRouter</a> ⇐ <code>ReactRouter:HashRouter</code></dt>
 <dd></dd>
 <dt><a href="#Router">Router</a> ⇐ <code>ReactRouter:Router</code></dt>
 <dd></dd>
 </dl>
 
-<a name="Link"></a>
+## Functions
 
-## Link ⇐ <code>ReactRouterRedirect</code>
+<dl>
+<dt><a href="#withR3Options">withR3Options(WrappedRouter)</a></dt>
+<dd><p>Higher order component intended to wrap React Router&#39;s *Router components to extend the functionality</p>
+</dd>
+<dt><a href="#withSearch">withSearch(WrappedComponent, searchOptions)</a></dt>
+<dd><p>Higher-order component to provide the search parameters as an object,
+The result of @see toParams are made available as props.match.search.</p>
+</dd>
+<dt><a href="#arrayParser">arrayParser(val, key, params)</a> ⇒ <code>Boolean</code></dt>
+<dd><p>In the event that the search string has multiple values with the same key
+it will convert that into an array of those values for the given key.</p>
+<p>While there is no defined standard in <a href="https://tools.ietf.org/html/rfc3986#section-3.4">RFC 3986 Section 3.4</a>,
+most web frameworks accept and serialize them in the following manner as outlined
+in <a href="https://docs.microsoft.com/en-us/previous-versions/iis/6.0-sdk/ms524784(v=vs.90)">MSDN</a></p>
+</dd>
+<dt><a href="#parseBool">parseBool(val)</a> ⇒ <code>Boolean</code></dt>
+<dd><p>convenience method for boolean attributes.</p>
+</dd>
+<dt><a href="#toParams">toParams(str, options)</a></dt>
+<dd><p>Converts URL parameters to a Object collection of key/value pairs
+Decodes encoded url characters to back to normal strings.</p>
+</dd>
+</dl>
+
+<a name="Redirect"></a>
+
+## Redirect ⇐ <code>ReactRouter:Redirect</code>
 **Kind**: global class  
-**Extends**: <code>ReactRouterRedirect</code>  
+**Extends**: <code>ReactRouter:Redirect</code>  
+<a name="new_Redirect_new"></a>
 
-* [Link](#Link) ⇐ <code>ReactRouterRedirect</code>
-    * [new Link()](#new_Link_new)
-    * [new Link()](#new_Link_new)
-
-<a name="new_Link_new"></a>
-
-### new Link()
+### new Redirect()
 creates a Redirect for the browser to route to a different path while
 retaining the existing query string parameters on the url.
 [React Router Redirect](https://reacttraining.com/react-router/web/api/Redirect)
 
+<a name="Link"></a>
+
+## Link ⇐ <code>ReactRouter:Link</code>
+**Kind**: global class  
+**Extends**: <code>ReactRouter:Link</code>  
 <a name="new_Link_new"></a>
 
 ### new Link()
 creates routable links using the React Router Link component that preserves
 the existing query parameters or creates external anchors when given a FQDN url.
 [React Router Link](https://reacttraining.com/react-router/web/api/Link)
-TODO: implement
-
-<a name="Link"></a>
-
-## Link ⇐ <code>ReactRouterLink</code>
-**Kind**: global class  
-**Extends**: <code>ReactRouterLink</code>  
-
-* [Link](#Link) ⇐ <code>ReactRouterLink</code>
-    * [new Link()](#new_Link_new)
-    * [new Link()](#new_Link_new)
-
-<a name="new_Link_new"></a>
-
-### new Link()
-creates a Redirect for the browser to route to a different path while
-retaining the existing query string parameters on the url.
-[React Router Redirect](https://reacttraining.com/react-router/web/api/Redirect)
-
-<a name="new_Link_new"></a>
-
-### new Link()
-creates routable links using the React Router Link component that preserves
-the existing query parameters or creates external anchors when given a FQDN url.
-[React Router Link](https://reacttraining.com/react-router/web/api/Link)
-TODO: implement
+TODO: implement this feature
 
 <a name="Route"></a>
 
-## Route ⇐ <code>ReactRouterRoute</code>
+## Route ⇐ <code>ReactRouter:Route</code>
 **Kind**: global class  
-**Extends**: <code>ReactRouterRoute</code>  
+**Extends**: <code>ReactRouter:Route</code>  
 
-* [Route](#Route) ⇐ <code>ReactRouterRoute</code>
+* [Route](#Route) ⇐ <code>ReactRouter:Route</code>
     * [new Route()](#new_Route_new)
     * [.store](#Route.store)
     * [.onEnter](#Route.onEnter)
@@ -84,9 +93,10 @@ TODO: implement
 
 ### new Route()
 Provides a cleaner data resolution scheme for routed applications.
-[React Router Route](https://reacttraining.com/react-router/web/api/Route)
+See [ReactRouter:Route](https://reacttraining.com/react-router/web/api/Route)
+for standard options documentation
 
-**Example**  
+**Example** *(Define your route as you would using react-router)*  
 ```jsx
 <Route
     path="/demo/:id"
@@ -149,7 +159,7 @@ It is simply a notification channel for you to decide what to do
 such as conditionally dispatching an action through redux or triggering other events.
 
 **Kind**: static property of [<code>Route</code>](#Route)  
-**Example**  
+**Example** *(define the onEnter callback fn)*  
 ```js
 onEnter={(store) => {
     if (!store.getState().someData) {
@@ -217,7 +227,7 @@ component to render while waiting for properties defined in "resolve" to finish 
 ```js
 interstitial={({ match }) => {
     return (<h3>Loading...</h3>);
- }}
+}}
 ```
 <a name="Route.searchOptions"></a>
 
@@ -228,9 +238,8 @@ Parsers for query parameters to convert something like "1" into the integer 1
 These are made available on props.match.search
 
 **Kind**: static property of [<code>Route</code>](#Route)  
-**Example**  
+**Example** *(given this property configuration.)*  
 ```js
-// given this property configuration.
 searchOptions={{
     num: parseInt,
     edit: parseBool
@@ -246,7 +255,7 @@ render={({ match }) => {
     return (<div>
                 <search-params data-search={stringified} />
             </div>);
-    }} />
+}} />
 ```
 <a name="Route.Resolver+componentDidMount"></a>
 
@@ -277,6 +286,50 @@ and provides any children elements defined in the route declaration
 to the component to render as props.children.
 
 **Kind**: static method of [<code>Route</code>](#Route)  
+<a name="BrowserRouter"></a>
+
+## BrowserRouter ⇐ <code>ReactRouter:BrowserRouter</code>
+**Kind**: global class  
+**Extends**: <code>ReactRouter:BrowserRouter</code>  
+<a name="new_BrowserRouter_new"></a>
+
+### new BrowserRouter()
+Wrapper for React Router's BrowserRouter component that provides
+defaultRoute and ensureTrailingSlash options
+
+<a name="MemoryRouter"></a>
+
+## MemoryRouter ⇐ <code>ReactRouter:MemoryRouter</code>
+**Kind**: global class  
+**Extends**: <code>ReactRouter:MemoryRouter</code>  
+<a name="new_MemoryRouter_new"></a>
+
+### new MemoryRouter()
+Wrapper for React Router's MemoryRouter component that provides
+defaultRoute and ensureTrailingSlash options
+
+<a name="StaticRouter"></a>
+
+## StaticRouter ⇐ <code>ReactRouter:StaticRouter</code>
+**Kind**: global class  
+**Extends**: <code>ReactRouter:StaticRouter</code>  
+<a name="new_StaticRouter_new"></a>
+
+### new StaticRouter()
+Wrapper for React Router's StaticRouter component that provides
+defaultRoute and ensureTrailingSlash options
+
+<a name="HashRouter"></a>
+
+## HashRouter ⇐ <code>ReactRouter:HashRouter</code>
+**Kind**: global class  
+**Extends**: <code>ReactRouter:HashRouter</code>  
+<a name="new_HashRouter_new"></a>
+
+### new HashRouter()
+Wrapper for React Router's HashRouter component that provides
+defaultRoute and ensureTrailingSlash options
+
 <a name="Router"></a>
 
 ## Router ⇐ <code>ReactRouter:Router</code>
@@ -291,7 +344,7 @@ to the component to render as props.children.
 <a name="new_Router_new"></a>
 
 ### new Router()
-Wrapper for React Router's Router component that provides
+Wrapper for React Router's base Router component that provides
 defaultRoute and ensureTrailingSlash options
 
 <a name="Router.ensureTrailingSlash"></a>
@@ -321,4 +374,117 @@ automatically redirect to the defaultRoute specified. Default is undefined.
 <BrowserRouter defaultRoute="/demo/world" >
     <App/>
 </BrowserRouter>,
+```
+<a name="withR3Options"></a>
+
+## withR3Options(WrappedRouter)
+Higher order component intended to wrap React Router's *Router components to extend the functionality
+
+**Kind**: global function  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| WrappedRouter | [<code>Router</code>](#Router) | @see Router @see BrowserRouter @see MemoryRouter @see StaticRouter @see HashRouter |
+
+<a name="withSearch"></a>
+
+## withSearch(WrappedComponent, searchOptions)
+Higher-order component to provide the search parameters as an object,
+The result of @see toParams are made available as props.match.search.
+
+**Kind**: global function  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| WrappedComponent | <code>Component</code> |  |
+| searchOptions | <code>Object</code> | @see searchOptions |
+
+<a name="arrayParser"></a>
+
+## arrayParser(val, key, params) ⇒ <code>Boolean</code>
+In the event that the search string has multiple values with the same key
+it will convert that into an array of those values for the given key.
+
+While there is no defined standard in [RFC 3986 Section 3.4](https://tools.ietf.org/html/rfc3986#section-3.4),
+most web frameworks accept and serialize them in the following manner as outlined
+in [MSDN](https://docs.microsoft.com/en-us/previous-versions/iis/6.0-sdk/ms524784(v=vs.90))
+
+**Kind**: global function  
+**Returns**: <code>Boolean</code> - returns the currently parsed value.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| val | <code>Object</code> | the value to parse |
+| key | <code>String</code> | the name of the value to parse |
+| params | <code>Object</code> | all of the parameters that have been parsed so far. |
+
+**Example**  
+```js
+window.location.search = '?values=foo&values=bar&values=hello&values=world';
+const params = toParams(window.location.search, {});
+console.log(params) // {values: ["foo","bar","hello", "world"]}
+```
+**Example**  
+```js
+window.location.search = '?values=1&values=2&values=3&values=5&values=7';
+const params = toParams(window.location.search, {
+    values: parseInt
+});
+console.log(params) // {values: [1, 2, 3, 5, 7]}
+```
+**Example**  
+```js
+window.location.search = '?answer=42';
+const params = toParams(window.location.search, {
+    answer: parseInt
+});
+console.log(params) // {answer: 42}
+```
+<a name="parseBool"></a>
+
+## parseBool(val) ⇒ <code>Boolean</code>
+convenience method for boolean attributes.
+
+**Kind**: global function  
+**Returns**: <code>Boolean</code> - returns true if the val is "true" or the integer 1 ignoring case, otherwise, false.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| val | <code>String</code> \| <code>Integer</code> | the value to parse as a boolean |
+
+<a name="toParams"></a>
+
+## toParams(str, options)
+Converts URL parameters to a Object collection of key/value pairs
+Decodes encoded url characters to back to normal strings.
+
+**Kind**: global function  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| str | <code>String</code> |  |
+| options | <code>Object</code> | custom parser functions based on the key name |
+
+**Example** *(convert query string to object:)*  
+```js
+import {toParams} from '@mcklabs/react-router-resolve';
+let paramsObject = toParams('?foo=bar&hello=world&hello=array&unsafe=I%20am%20an%20unsafe%20string');
+
+console.log(paramsObject) // { foo: 'bar', hello: ['world', 'array'], unsafe: 'I am an unsafe string'}
+```
+**Example** *(pass an optional parser object)*  
+```js
+import {toParams} from '@mcklabs/react-router-resolve';
+let paramsObject = toParams('?intvals=1&intvals=2&intvals=3', {
+    intvals: parseInt
+});
+
+console.log(paramsObject) // { intvals: [ 1, 2, 3 ] }
+```
+**Example** *(without psassing an optional parser object)*  
+```js
+import {toParams} from '@mcklabs/react-router-resolve';
+let paramsObject = toParams('?intvals=1&intvals=2&intvals=3');
+
+console.log(paramsObject) // { intvals: [ "1", "2", "3" ] }
 ```

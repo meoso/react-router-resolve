@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "webpack",
-    "docs": "jsdoc2md src/*.jsx > README.md"
+    "docs": "jsdoc2md src/*.jsx src/*.js > README.md"
   },
   "publishConfig": {
     "registry": "https://tools.mckesson.com/artifactory/api/npm/mcklbs-release-repo/"

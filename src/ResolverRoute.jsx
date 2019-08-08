@@ -5,11 +5,12 @@ import { withSearch } from './withSearch';
 
 /**
  * @class Route
- * @extends {ReactRouterRoute}
+ * @extends {ReactRouter:Route}
  * @description Provides a cleaner data resolution scheme for routed applications.
- * [React Router Route]{@link https://reacttraining.com/react-router/web/api/Route}
+ * See [ReactRouter:Route]{@link https://reacttraining.com/react-router/web/api/Route}
+ * for standard options documentation
  *
- * @example @lang jsx
+ * @example @lang jsx <caption>Define your route as you would using react-router</caption>
  * <Route
  *     path="/demo/:id"
  *     // parsers for query parameters to convert something like "1" into the integer 1. These are made available on
@@ -172,7 +173,7 @@ ResolveRoute.propTypes = {
      * @description executed when the route is activated upon a url match.
      * It is simply a notification channel for you to decide what to do
      * such as conditionally dispatching an action through redux or triggering other events.
-     * @example @lang js
+     * @example @lang js <caption>define the onEnter callback fn</caption>
      * onEnter={(store) => {
      *     if (!store.getState().someData) {
      *         store.dispatch({ type: "SOME_ACTION" });
@@ -231,7 +232,7 @@ ResolveRoute.propTypes = {
      * @example @lang js
      * interstitial={({ match }) => {
      *     return (<h3>Loading...</h3>);
-     *  }}
+     * }}
      */
     interstitial: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
     /**
@@ -241,8 +242,7 @@ ResolveRoute.propTypes = {
      * name and the function parses that property and returns the value
      * Parsers for query parameters to convert something like "1" into the integer 1
      * These are made available on props.match.search
-     * @example @lang js
-     * // given this property configuration.
+     * @example @lang js <caption>given this property configuration.</caption>
      * searchOptions={{
      *     num: parseInt,
      *     edit: parseBool
@@ -258,7 +258,7 @@ ResolveRoute.propTypes = {
      *     return (<div>
      *                 <search-params data-search={stringified} />
      *             </div>);
-     *     }} />
+     * }} />
      */
     searchOptions: PropTypes.object
 };

@@ -1,4 +1,36 @@
-const defaultParser = (val, key, params) => {
+/**
+ * @function arrayParser
+ * @param {Object} val the value to parse
+ * @param {String} key the name of the value to parse
+ * @param {Object} params all of the parameters that have been parsed so far.
+ * @returns {Boolean} returns the currently parsed value.
+ * @description In the event that the search string has multiple values with the same key
+ * it will convert that into an array of those values for the given key.
+ *
+ * While there is no defined standard in [RFC 3986 Section 3.4]{@link https://tools.ietf.org/html/rfc3986#section-3.4},
+ * most web frameworks accept and serialize them in the following manner as outlined
+ * in [MSDN]{@link https://docs.microsoft.com/en-us/previous-versions/iis/6.0-sdk/ms524784(v=vs.90)}
+ *
+ * @example @lang js
+ * window.location.search = '?values=foo&values=bar&values=hello&values=world';
+ * const params = toParams(window.location.search, {});
+ * console.log(params) // {values: ["foo","bar","hello", "world"]}
+ *
+ * @example @lang js
+ * window.location.search = '?values=1&values=2&values=3&values=5&values=7';
+ * const params = toParams(window.location.search, {
+ *     values: parseInt
+ * });
+ * console.log(params) // {values: [1, 2, 3, 5, 7]}
+ *
+ * @example @lang js
+ * window.location.search = '?answer=42';
+ * const params = toParams(window.location.search, {
+ *     answer: parseInt
+ * });
+ * console.log(params) // {answer: 42}
+ */
+const arrayParser = (val, key, params) => {
     let current = params[key];
     if (current) {
         if (!Array.isArray(current)) {
@@ -10,6 +42,12 @@ const defaultParser = (val, key, params) => {
     }
     return current;
 };
+/**
+ * @function parseBool
+ * @param {String|Integer} val the value to parse as a boolean
+ * @returns {Boolean} returns true if the val is "true" or the integer 1 ignoring case, otherwise, false.
+ * @description convenience method for boolean attributes.
+ */
 const parseBool = (val) => {
     if (val !== 1 && val.toLowerCase() !== "true") {
         return false;
@@ -17,20 +55,28 @@ const parseBool = (val) => {
     return true;
 };
 /**
- * Converts URL parameters to a Object collection of key/value pairs
- * Decodes encoded url characters to back to normal strings.
+ * @function toParams
  * @param {String} str
- *
+ * @param {Object} options custom parser functions based on the key name
+ * @description Converts URL parameters to a Object collection of key/value pairs
+ * Decodes encoded url characters to back to normal strings.
  * @example <caption>convert query string to object:</caption>
- * import {toParams} from '@helio/utils';
- * let paramsObject = toParams('#?foo=bar&hello=world&hello=array&unsafe=I%20am%20an%20unsafe%20string');
+ * import {toParams} from '@mcklabs/react-router-resolve';
+ * let paramsObject = toParams('?foo=bar&hello=world&hello=array&unsafe=I%20am%20an%20unsafe%20string');
  *
- * paramsObject == {
- *  foo: 'bar',
- *  hello: ['world', 'array'],
- *  unsafe: 'I am an unsafe string'
+ * console.log(paramsObject) // { foo: 'bar', hello: ['world', 'array'], unsafe: 'I am an unsafe string'}
+ * @example <caption>pass an optional parser object</caption>
+ * import {toParams} from '@mcklabs/react-router-resolve';
+ * let paramsObject = toParams('?intvals=1&intvals=2&intvals=3', {
+ *     intvals: parseInt
+ * });
  *
- * };
+ * console.log(paramsObject) // { intvals: [ 1, 2, 3 ] }
+ * @example <caption>without psassing an optional parser object</caption>
+ * import {toParams} from '@mcklabs/react-router-resolve';
+ * let paramsObject = toParams('?intvals=1&intvals=2&intvals=3');
+ *
+ * console.log(paramsObject) // { intvals: [ "1", "2", "3" ] }
  */
 const toParams = (str, options = {}) => {
     const parts = str.split('?');
@@ -41,61 +87,14 @@ const toParams = (str, options = {}) => {
         if (innerParts.length !== 2) return;
         const paramKey = decodeURIComponent(innerParts[0]);
         const paramVal = decodeURIComponent(innerParts[1]);
-        const parser = options[paramKey] || defaultParser;
-        params[paramKey] = parser(paramVal, paramKey, params);
+        const parser = options[paramKey] || (() => paramVal);
+        params[paramKey] = arrayParser(parser(paramVal, paramKey, params), paramKey, params);
     });
     return params;
 };
 
-
-/**
- * Returns the value of an object via the path as a string
- * @param {String} path
- * @param {Object} obj Object to find the property in
- * @param {String} fb Fallback string when not found
- *
- * @example
- * let result = getFromObj('hello.foo', {
- *  hello: {
- *    foo: 'bar'
- *  }
- * });
- * result == 'bar';
- */
-const getFromObj = (path, obj, fb = `$\{${path}}`) => {
-    return path.split('.').reduce((res, key) => res[key] != null ? res[key] : fb, obj);
-};
-
-/**
- * Processes a string formatted like an ES6 template against an object
- * @param {String} template the string template
- * @param {Object} map Key/Value pairs to process the string against
- * @param {String} fallback they string fallback when the value is missing.
- *
- * @example
- * let result = template('I am a string literal formatted ${message.label}.', {
- *  message: {
- *    label: 'to look like an ES6 template'
- *  }
- * });
- *
- * result == 'I am a string literal formatted to look like an ES6 template.';
- */
-const template = (tmpl, map, fallback) => {
-    const root = Object.assign({ this: map }, map);
-    // if (tmpl.match(/\$\{\s*this\s*\./gm)) {
-    //   // cant enable this until we drop IE support. for now we can only do substitutions.
-    //   // return renderLiteral(tmpl, map);
-    // }
-    return tmpl && tmpl.replace(/\$\{.+?}/g, (match) => {
-        const path = match.substr(2, match.length - 3).trim();
-        return getFromObj(path, root, fallback);
-    });
-};
-
 export {
-    getFromObj,
-    template,
     toParams,
+    arrayParser,
     parseBool
 };
