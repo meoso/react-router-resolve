@@ -77,7 +77,7 @@ class ResolveRoute extends React.Component {
              */
             componentDidMount() {
                 if (resolve) {
-                    if (typeof store.subscribe === 'function') {
+                    if (store && typeof store.subscribe === 'function') {
                         store.subscribe(() => {
                             this.waitForResolve();
                         });
@@ -113,7 +113,7 @@ class ResolveRoute extends React.Component {
                         acc[resolveKeys[i]] = val;
                         return acc;
                     }, {}) };
-                    if (typeof store.setState === 'function') {
+                    if (store && typeof store.setState === 'function') {
                         store.setState(newState);
                     }
                     this.setState({ resolved: newState });

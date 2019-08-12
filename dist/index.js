@@ -412,7 +412,7 @@ function (_React$Component) {
             var _this2 = this;
 
             if (resolve) {
-              if (typeof store.subscribe === 'function') {
+              if (store && typeof store.subscribe === 'function') {
                 store.subscribe(function () {
                   _this2.waitForResolve();
                 });
@@ -459,7 +459,7 @@ function (_React$Component) {
                 return acc;
               }, {}));
 
-              if (typeof store.setState === 'function') {
+              if (store && typeof store.setState === 'function') {
                 store.setState(newState);
               }
 
