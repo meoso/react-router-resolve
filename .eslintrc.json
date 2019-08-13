@@ -9,6 +9,11 @@
       "spread": true
     }
   },
+  "globals" : {
+    "renderRoute": "readonly",
+    "shallowRender": "readonly",
+    "testRender": "readonly"
+  },
   "rules": {
     "semi": "error",
     "new-cap": "off",
