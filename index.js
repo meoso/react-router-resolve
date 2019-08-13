@@ -1,5 +1,6 @@
 
 import Route from './src/ResolverRoute';
+import { withSearch } from './src/withSearch';
 
 import {
     BrowserRouter,
@@ -31,5 +32,6 @@ export {
     Link,
     toParams,
     arrayParser,
-    parseBool
+    parseBool,
+    withSearch
 };

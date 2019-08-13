@@ -84,6 +84,8 @@ class ResolveRoute extends React.Component {
                     } else {
                         this.waitForResolve();
                     }
+                } else {
+                    this.setState({ resolved: {} });
                 }
                 this.props.onEnter(store, this.props);
             }

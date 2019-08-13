@@ -419,6 +419,10 @@ function (_React$Component) {
               } else {
                 this.waitForResolve();
               }
+            } else {
+              this.setState({
+                resolved: {}
+              });
             }
 
             this.props.onEnter(store, this.props);
@@ -776,6 +780,8 @@ var Router = Router_withR3Options(external_react_router_dom_["Router"]);
 /* concated harmony reexport toParams */__webpack_require__.d(__webpack_exports__, "toParams", function() { return toParams; });
 /* concated harmony reexport arrayParser */__webpack_require__.d(__webpack_exports__, "arrayParser", function() { return arrayParser; });
 /* concated harmony reexport parseBool */__webpack_require__.d(__webpack_exports__, "parseBool", function() { return parseBool; });
+/* concated harmony reexport withSearch */__webpack_require__.d(__webpack_exports__, "withSearch", function() { return withSearch_withSearch; });
+
 
 
 
