@@ -5,7 +5,6 @@ import ResolveRoute from '../src/ResolverRoute';
 
 describe("ResolverRoute", () => {
     describe("when the store property is not provided", () => {
-        // let contents;
         let renderedElement;
         beforeEach(() => {
             renderedElement = renderRoute(ResolveRoute, {
@@ -21,7 +20,6 @@ describe("ResolverRoute", () => {
     });
 
     describe('when the resolve property is not provided', () => {
-        // let contents;
         let renderedElement;
         beforeEach(() => {
             renderedElement = renderRoute(ResolveRoute, {
@@ -37,7 +35,6 @@ describe("ResolverRoute", () => {
     });
 
     describe('when the resolve property is provided', () => {
-        // let contents;
         let renderedElement;
         beforeEach(() => {
             renderedElement = renderRoute(ResolveRoute, {
