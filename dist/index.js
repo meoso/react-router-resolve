@@ -676,6 +676,7 @@ function Router_objectWithoutPropertiesLoose(source, excluded) { if (source == n
 
 
 
+
 /**
  * @function withR3Options
  * @param {Router} WrappedRouter @see Router @see BrowserRouter @see MemoryRouter @see StaticRouter @see HashRouter
@@ -690,7 +691,6 @@ var Router_withR3Options = function withR3Options(WrappedRouter) {
    * @description ensures a trailing slash is applied to the url. at runtime,
    * browser url will be converted to always end in "/". default is false.
    *
-   * TODO: Implement
    * @example @lang jsx
    * <BrowserRouter ensureTrailingSlash={true} >
    *     <App/>
@@ -709,10 +709,11 @@ var Router_withR3Options = function withR3Options(WrappedRouter) {
    * </BrowserRouter>,
    */
 
-  return function (_ref) {
+  var RouterWrapper = function RouterWrapper(_ref) {
     var children = _ref.children,
+        ensureTrailingSlash = _ref.ensureTrailingSlash,
         defaultRoute = _ref.defaultRoute,
-        ownProps = Router_objectWithoutProperties(_ref, ["children", "defaultRoute"]);
+        ownProps = Router_objectWithoutProperties(_ref, ["children", "ensureTrailingSlash", "defaultRoute"]);
 
     return external_react_default.a.createElement(ReactRouter, ownProps, defaultRoute && external_react_default.a.createElement(external_react_router_dom_["Route"], {
       exact: true,
@@ -723,8 +724,26 @@ var Router_withR3Options = function withR3Options(WrappedRouter) {
           to: defaultRoute
         });
       }
+    }), ensureTrailingSlash && external_react_default.a.createElement(external_react_router_dom_["Route"], {
+      exact: true,
+      strict: true,
+      path: "/:url*",
+      render: function render(props) {
+        return external_react_default.a.createElement(Redirect, {
+          to: "".concat(props.location.pathname, "/")
+        });
+      }
     }), children);
   };
+
+  RouterWrapper.propTypes = {
+    ensureTrailingSlash: external_prop_types_["PropTypes"].bool,
+    defaultRoute: external_prop_types_["PropTypes"].string
+  };
+  RouterWrapper.defaultProps = {
+    ensureTrailingSlash: false
+  };
+  return RouterWrapper;
 };
 /**
  * @class BrowserRouter
