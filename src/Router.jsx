@@ -24,7 +24,6 @@ const withR3Options = (WrappedRouter) => {
      * @description ensures a trailing slash is applied to the url. at runtime,
      * browser url will be converted to always end in "/". default is false.
      *
-     * TODO: Implement
      * @example @lang jsx
      * <BrowserRouter ensureTrailingSlash={true} >
      *     <App/>

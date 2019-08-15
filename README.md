@@ -353,8 +353,6 @@ defaultRoute and ensureTrailingSlash options
 ensures a trailing slash is applied to the url. at runtime,
 browser url will be converted to always end in "/". default is false.
 
-TODO: Implement
-
 **Kind**: static property of [<code>Router</code>](#Router)  
 **Example**  
 ```jsx
