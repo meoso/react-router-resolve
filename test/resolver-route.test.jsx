@@ -14,7 +14,7 @@ describe("ResolverRoute", () => {
             });
         });
 
-        test("renders the result of the render prop", () => {
+        it("renders the result of the render prop", () => {
             expect(renderedElement.innerHTML).toBe("<div>fake content without store</div>");
         });
     });
@@ -29,7 +29,7 @@ describe("ResolverRoute", () => {
             });
         });
 
-        test("renders the result of the render prop", () => {
+        it("renders the result of the render prop", () => {
             expect(renderedElement.innerHTML).toBe("<div>fake content without a resolve prop</div>");
         });
     });
@@ -47,7 +47,7 @@ describe("ResolverRoute", () => {
             });
         });
 
-        test("renders the result of the render prop and passes the resolved values from the resolve factory functions", () => {
+        it("renders the result of the render prop and passes the resolved values from the resolve factory functions", () => {
             expect(renderedElement.innerHTML).toBe("<div>fake content LIT, BRO<span>SWOL</span></div>");
         });
     });
@@ -64,8 +64,62 @@ describe("ResolverRoute", () => {
             });
         });
 
-        test("renders the result of the render prop and passes the resolved values from the resolve factory functions", () => {
+        it("renders the result of the render prop and passes the resolved values from the resolve factory functions", () => {
             expect(renderedElement.innerHTML).toBe("<div>fake content LIT, BRO<span>SWOL</span></div>");
+        });
+    });
+    describe('when a promise resolution in resolve is rejected.', () => {
+        let resolveFactories, litError, swolError;
+        beforeEach(() => {
+            litError = new Error("LIT, BRO");
+            swolError = new Error("SWOL");
+            resolveFactories = {
+                myNamingIs: () => Promise.reject(litError),
+                myCodeIs: () => Promise.reject(swolError)
+            };
+        });
+
+        describe('when the onReject handler is provided as a property to the route', () => {
+            let renderedElement, onRejectSpy;
+            beforeEach(() => {
+                onRejectSpy = jest.fn().mockImplementation((error, factoryName) => {
+                    return `${factoryName} had an error.`;
+                });
+                renderedElement = renderRoute(ResolveRoute, {
+                    resolve: resolveFactories,
+                    onReject: onRejectSpy,
+                    path: "/",
+                    render: ({ myNamingIs, myCodeIs }) => <div>fake content {myNamingIs}<span>{myCodeIs}</span></div>
+                });
+            });
+
+            it("should call onReject for each rejected promise", () => {
+                expect(onRejectSpy.mock.calls.length).toBe(2);
+            });
+
+            it("should call onReject with the correct arguments for each rejected promise", () => {
+                expect(onRejectSpy.mock.calls[0][0]).toBe(litError);
+                expect(onRejectSpy.mock.calls[1][0]).toBe(swolError);
+                expect(onRejectSpy.mock.calls[0][1]).toBe("myNamingIs");
+                expect(onRejectSpy.mock.calls[1][1]).toBe("myCodeIs");
+            });
+            it("renders the result of the render prop with the rejected properties redfined as the return value from onReject", () => {
+                expect(renderedElement.innerHTML).toBe("<div>fake content myNamingIs had an error.<span>myCodeIs had an error.</span></div>");
+            });
+        });
+        describe('when there is no onReject handler provided', () => {
+            let renderedElement;
+            beforeEach(() => {
+                renderedElement = renderRoute(ResolveRoute, {
+                    resolve: resolveFactories,
+                    path: "/",
+                    render: ({ myNamingIs, myCodeIs }) => <div>fake content {myNamingIs}<span>{myCodeIs}</span></div>
+                });
+            });
+
+            it("renders the result of the render prop with the rejected properties not defined", () => {
+                expect(renderedElement.innerHTML).toBe("<div>fake content <span></span></div>");
+            });
         });
     });
 });

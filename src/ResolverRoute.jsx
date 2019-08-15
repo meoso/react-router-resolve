@@ -110,7 +110,12 @@ class ResolveRoute extends React.Component {
                     const prom = Promise.resolve(resolveFn(initialState, this.props));
                     resolving.push(prom);
                 });
-                Promise.all(resolving).then((values) => {
+                //promises.map(p => p.catch(() => undefined))
+                Promise.all(resolving.map((p, i) => {
+                    // catch all the promise rejections and execute the onReject handler
+                    // take the result of the handler for use in rendering the component.
+                    return p.catch((reason) => this.props.onReject(reason, resolveKeys[i], this.props));
+                })).then((values) => {
                     const newState = { ...initialState, ...values.reduce((acc, val, i) => {
                         acc[resolveKeys[i]] = val;
                         return acc;
@@ -150,7 +155,8 @@ class ResolveRoute extends React.Component {
 
 ResolveRoute.defaultProps = {
     interstitial: () => '',
-    onEnter: () => {}
+    onEnter: () => {},
+    onReject: () => {}
 };
 
 ResolveRoute.contextTypes = {
@@ -183,6 +189,26 @@ ResolveRoute.propTypes = {
      * }}
      */
     onEnter: PropTypes.func,
+    /**
+     * @name onReject
+     * @memberof Route
+     * @description executed when a promise in the resolve factory functions is rejected
+     * anything returned by onReject will be the value that is passed as the property for that value.
+     * for multiple rejections, such as when you have more than one factory method that gets rejected,
+     * the onReject call will be executed for each rejected promise.
+     * @param {Error} reason the promise rejection reason
+     * @param {String} factoryName the string name of the factory method that got rejected.
+     * @param {Object} ownProps the current route's properties.
+     * @example @lang js <caption>define the onReject callback fn</caption>
+     * onReject={(reason, factoryName, ownProps) => {
+     *     if (factoryName === 'myFactory') {
+     *         return {some: "defaultObject"}
+     *     } else {
+     *         return "someDefaultValue";
+     *     }
+     * }}
+     */
+    onReject: PropTypes.func,
     /**
      * @name resolve
      * @memberof Route

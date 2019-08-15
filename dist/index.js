@@ -456,8 +456,15 @@ function (_React$Component) {
 
               var prom = Promise.resolve(_resolveFn(initialState, _this3.props));
               resolving.push(prom);
-            });
-            Promise.all(resolving).then(function (values) {
+            }); //promises.map(p => p.catch(() => undefined))
+
+            Promise.all(resolving.map(function (p, i) {
+              // catch all the promise rejections and execute the onReject handler
+              // take the result of the handler for use in rendering the component.
+              return p["catch"](function (reason) {
+                return _this3.props.onReject(reason, resolveKeys[i], _this3.props);
+              });
+            })).then(function (values) {
               var newState = _objectSpread({}, initialState, {}, values.reduce(function (acc, val, i) {
                 acc[resolveKeys[i]] = val;
                 return acc;
@@ -508,7 +515,8 @@ ResolverRoute_ResolveRoute.defaultProps = {
   interstitial: function interstitial() {
     return '';
   },
-  onEnter: function onEnter() {}
+  onEnter: function onEnter() {},
+  onReject: function onReject() {}
 };
 ResolverRoute_ResolveRoute.contextTypes = {
   store: external_prop_types_default.a.object
@@ -540,6 +548,27 @@ ResolverRoute_ResolveRoute.propTypes = {
    * }}
    */
   onEnter: external_prop_types_default.a.func,
+
+  /**
+   * @name onReject
+   * @memberof Route
+   * @description executed when a promise in the resolve factory functions is rejected
+   * anything returned by onReject will be the value that is passed as the property for that value.
+   * for multiple rejections, such as when you have more than one factory method that gets rejected,
+   * the onReject call will be executed for each rejected promise.
+   * @param {Error} reason the promise rejection reason
+   * @param {String} factoryName the string name of the factory method that got rejected.
+   * @param {Object} ownProps the current route's properties.
+   * @example @lang js <caption>define the onReject callback fn</caption>
+   * onReject={(reason, factoryName, ownProps) => {
+   *     if (factoryName === 'myFactory') {
+   *         return {some: "defaultObject"}
+   *     } else {
+   *         return "someDefaultValue";
+   *     }
+   * }}
+   */
+  onReject: external_prop_types_default.a.func,
 
   /**
    * @name resolve

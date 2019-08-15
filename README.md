@@ -80,6 +80,7 @@ TODO: implement this feature
     * [new Route()](#new_Route_new)
     * [.store](#Route.store)
     * [.onEnter](#Route.onEnter)
+    * [.onReject](#Route.onReject)
     * [.resolve](#Route.resolve)
     * [.component](#Route.component)
     * [.render](#Route.render)
@@ -164,6 +165,32 @@ such as conditionally dispatching an action through redux or triggering other ev
 onEnter={(store) => {
     if (!store.getState().someData) {
         store.dispatch({ type: "SOME_ACTION" });
+    }
+}}
+```
+<a name="Route.onReject"></a>
+
+### Route.onReject
+executed when a promise in the resolve factory functions is rejected
+anything returned by onReject will be the value that is passed as the property for that value.
+for multiple rejections, such as when you have more than one factory method that gets rejected,
+the onReject call will be executed for each rejected promise.
+
+**Kind**: static property of [<code>Route</code>](#Route)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| reason | <code>Error</code> | the promise rejection reason |
+| factoryName | <code>String</code> | the string name of the factory method that got rejected. |
+| ownProps | <code>Object</code> | the current route's properties. |
+
+**Example** *(define the onReject callback fn)*  
+```js
+onReject={(reason, factoryName, ownProps) => {
+    if (factoryName === 'myFactory') {
+        return {some: "defaultObject"}
+    } else {
+        return "someDefaultValue";
     }
 }}
 ```
