@@ -5,8 +5,9 @@ import ReactTestUtils from 'react-dom/test-utils'; // ES6
 import TestRenderer from 'react-test-renderer'; // ES6
 import ShallowRenderer from 'react-test-renderer/shallow';
 import { StaticRouter } from '../src/Router';
+import { createBrowserHistory } from "history";
 
-let testRenderContainer;
+let testRenderContainer, renderedComponent;
 
 const setupRender = () => {
     // eslint-disable-next-line no-unused-expressions
@@ -14,6 +15,22 @@ const setupRender = () => {
     testRenderContainer = null;
     testRenderContainer = document.createElement('div');
     document.body.appendChild(testRenderContainer);
+};
+
+global.renderRouter = (Component, props) => {
+    setupRender();
+    // Test first render and componentDidMount
+    const customHistory = createBrowserHistory();
+
+    ReactTestUtils.act(() => {
+        renderedComponent = ReactDOM.render(<Component
+            history={customHistory}
+            {...props} />, testRenderContainer);
+    });
+    return {
+        component: renderedComponent,
+        history: customHistory
+    };
 };
 
 global.renderRoute = (Component, props) => {

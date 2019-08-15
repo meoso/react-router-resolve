@@ -51,4 +51,21 @@ describe("ResolverRoute", () => {
             expect(renderedElement.innerHTML).toBe("<div>fake content LIT, BRO<span>SWOL</span></div>");
         });
     });
+    describe('when the resolve property is provided', () => {
+        let renderedElement;
+        beforeEach(() => {
+            renderedElement = renderRoute(ResolveRoute, {
+                resolve: {
+                    myNamingIs: () => "LIT, BRO",
+                    myCodeIs: () => Promise.resolve("SWOL")
+                },
+                path: "/",
+                render: ({ myNamingIs, myCodeIs }) => <div>fake content {myNamingIs}<span>{myCodeIs}</span></div>
+            });
+        });
+
+        test("renders the result of the render prop and passes the resolved values from the resolve factory functions", () => {
+            expect(renderedElement.innerHTML).toBe("<div>fake content LIT, BRO<span>SWOL</span></div>");
+        });
+    });
 });

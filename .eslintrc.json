@@ -10,8 +10,10 @@
     }
   },
   "globals" : {
-    "renderRoute": "readonly",
+    "renderComponent": "readonly",
     "shallowRender": "readonly",
+    "renderRouter": "readonly",
+    "renderRoute": "readonly",
     "testRender": "readonly"
   },
   "rules": {

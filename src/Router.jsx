@@ -9,6 +9,7 @@ import {
     Route
 } from 'react-router-dom';
 import { Redirect } from './Link';
+import { PropTypes } from 'prop-types';
 
 /**
  * @function withR3Options
@@ -40,18 +41,32 @@ const withR3Options = (WrappedRouter) => {
      *     <App/>
      * </BrowserRouter>,
      */
-    return ({ children, /* ensureTrailingSlash, */ defaultRoute, ...ownProps }) => {
+    const RouterWrapper = ({ children, ensureTrailingSlash, defaultRoute, ...ownProps }) => {
         return (
             <ReactRouter {...ownProps}>
-                {/* {ensureTrailingSlash && <Route exact strict path="/:url*" render={props => {
-                    debugger;
-                    return <Redirect to={`${props.location.pathname}/`}/>;
-                }} />} */}
-                {defaultRoute && <Route exact strict path="/" render={() => <Redirect to={defaultRoute}/>} />}
+                {defaultRoute &&
+                    <Route exact
+                        strict
+                        path="/"
+                        render={() => <Redirect to={defaultRoute}/>} />}
+                {ensureTrailingSlash &&
+                    <Route exact
+                        strict
+                        path="/:url*"
+                        render={props => <Redirect to={`${props.location.pathname}/`}/>} />}
+
                 {children}
             </ ReactRouter>
         );
     };
+    RouterWrapper.propTypes = {
+        ensureTrailingSlash: PropTypes.bool,
+        defaultRoute: PropTypes.string
+    };
+    RouterWrapper.defaultProps = {
+        ensureTrailingSlash: false
+    };
+    return RouterWrapper;
 };
 
 /**
