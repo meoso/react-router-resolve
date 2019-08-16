@@ -110,7 +110,6 @@ class ResolveRoute extends React.Component {
                     const prom = Promise.resolve(resolveFn(initialState, this.props));
                     resolving.push(prom);
                 });
-                //promises.map(p => p.catch(() => undefined))
                 Promise.all(resolving.map((p, i) => {
                     // catch all the promise rejections and execute the onReject handler
                     // take the result of the handler for use in rendering the component.
