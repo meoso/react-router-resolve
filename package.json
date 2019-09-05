@@ -1,6 +1,6 @@
 {
   "name": "@mcklabs/react-router-resolve",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "React Router wrapper for resolving models to routes in a more sane way.",
   "main": "dist/index.js",
   "author": "timothy.sweet@mckesson.com",

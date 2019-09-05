@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Route } from 'react-router-dom';
+import { Route, withRouter } from 'react-router-dom';
 import { withSearch } from './withSearch';
 
 /**
@@ -143,7 +143,7 @@ class ResolveRoute extends React.Component {
             }
         }
 
-        const ResolveWithSearch = withSearch(Resolver, searchOptions);
+        const ResolveWithSearch = withSearch(withRouter(Resolver), searchOptions);
 
         return (<Route {...ownProps} render={(props) => {
             return <ResolveWithSearch {...{ ...ownProps, ...props }}/>;

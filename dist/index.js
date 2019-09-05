@@ -262,7 +262,7 @@ var toParams = function toParams(str) {
 
 var withSearch_withSearch = function withSearch(WrappedComponent, searchOptions) {
   return Object(external_react_router_dom_["withRouter"])(function (props) {
-    var search = toParams(window.location.search, searchOptions);
+    var search = toParams(props.location.search, searchOptions);
     props.match.search = search;
     return external_react_default.a.createElement(WrappedComponent, props);
   });
@@ -456,8 +456,7 @@ function (_React$Component) {
 
               var prom = Promise.resolve(_resolveFn(initialState, _this3.props));
               resolving.push(prom);
-            }); //promises.map(p => p.catch(() => undefined))
-
+            });
             Promise.all(resolving.map(function (p, i) {
               // catch all the promise rejections and execute the onReject handler
               // take the result of the handler for use in rendering the component.
@@ -499,7 +498,7 @@ function (_React$Component) {
         return Resolver;
       }(external_react_default.a.Component);
 
-      var ResolveWithSearch = withSearch_withSearch(Resolver, searchOptions);
+      var ResolveWithSearch = withSearch_withSearch(Object(external_react_router_dom_["withRouter"])(Resolver), searchOptions);
       return external_react_default.a.createElement(external_react_router_dom_["Route"], _extends({}, ownProps, {
         render: function render(props) {
           return external_react_default.a.createElement(ResolveWithSearch, _objectSpread({}, ownProps, {}, props));

@@ -12,7 +12,7 @@ import { withRouter } from 'react-router-dom';
  */
 export const withSearch = (WrappedComponent, searchOptions) => {
     return withRouter((props) => {
-        const search = toParams(window.location.search, searchOptions);
+        const search = toParams(props.location.search, searchOptions);
         props.match.search = search;
         return <WrappedComponent {...props} />;
     });
