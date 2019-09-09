@@ -561,7 +561,7 @@ function (_React$Component) {
       }(external_react_default.a.Component);
 
       var ResolveWithSearch = withSearch_withSearch(Object(external_react_router_dom_["withRouter"])(Resolver), searchOptions);
-      return external_react_default.a.createElement(external_react_router_dom_["Route"], _extends({}, _objectSpread({}, ownProps), {
+      return external_react_default.a.createElement(external_react_router_dom_["Route"], _extends({}, ownProps, {
         component: ResolveWithSearch
       }));
     }

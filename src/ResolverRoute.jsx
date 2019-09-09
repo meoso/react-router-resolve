@@ -169,7 +169,7 @@ class ResolveRoute extends React.Component {
 
         const ResolveWithSearch = withSearch(withRouter(Resolver), searchOptions);
 
-        return (<Route {...{ ...ownProps }} component={ResolveWithSearch}/>);
+        return (<Route {...ownProps} component={ResolveWithSearch}/>);
     }
 }
 
