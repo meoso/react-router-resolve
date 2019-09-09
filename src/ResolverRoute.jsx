@@ -61,7 +61,7 @@ import { makeCancelable } from './utils';
 class ResolveRoute extends React.Component {
     render() {
         const store = this.context.store || this.props.store;
-        const { resolve, interstitial, component, render, searchOptions, ...ownProps } = this.props;
+        const { resolve, interstitial, component, render, searchOptions, onEnter, onReject, ...ownProps } = this.props;
         class Resolver extends React.Component {
             constructor(self) {
                 super(self);
@@ -82,13 +82,14 @@ class ResolveRoute extends React.Component {
             }
 
             componentDidUpdate() {
-                if (this.oldMatch !== this.props.match) {
-                    this.oldMatch = this.props.match;
-                    this.setup();
-                }
+                this.setup();
             }
 
             setup() {
+                if (this.oldHref === this.props.match.url) {
+                    return;
+                }
+                this.oldHref = this.props.match.url;
                 if (resolve) {
                     if (store && typeof store.subscribe === 'function') {
                         store.subscribe(() => {
@@ -100,7 +101,7 @@ class ResolveRoute extends React.Component {
                 } else {
                     this.setState({ resolved: {} });
                 }
-                this.props.onEnter(store, this.props);
+                onEnter(store, this.props);
             }
 
             /**
@@ -131,7 +132,7 @@ class ResolveRoute extends React.Component {
                 this.promiseWaiting = makeCancelable(Promise.all(resolving.map((p, i) => {
                     // catch all the promise rejections and execute the onReject handler
                     // take the result of the handler for use in rendering the component.
-                    return p.catch((reason) => this.props.onReject(reason, resolveKeys[i], this.props));
+                    return p.catch((reason) => onReject(reason, resolveKeys[i], this.props));
                 })));
                 this.promiseWaiting.then((values) => {
                     const newState = { ...initialState, ...values.reduce((acc, val, i) => {
@@ -168,9 +169,7 @@ class ResolveRoute extends React.Component {
 
         const ResolveWithSearch = withSearch(withRouter(Resolver), searchOptions);
 
-        return (<Route {...ownProps} render={(props) => {
-            return <ResolveWithSearch {...{ ...ownProps, ...props }}/>;
-        }}/>);
+        return (<Route {...{ ...ownProps }} component={ResolveWithSearch}/>);
     }
 }
 

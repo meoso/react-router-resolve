@@ -410,7 +410,9 @@ function (_React$Component) {
           component = _this$props.component,
           _render = _this$props.render,
           searchOptions = _this$props.searchOptions,
-          ownProps = _objectWithoutProperties(_this$props, ["resolve", "interstitial", "component", "render", "searchOptions"]);
+          onEnter = _this$props.onEnter,
+          onReject = _this$props.onReject,
+          ownProps = _objectWithoutProperties(_this$props, ["resolve", "interstitial", "component", "render", "searchOptions", "onEnter", "onReject"]);
 
       var Resolver =
       /*#__PURE__*/
@@ -445,15 +447,18 @@ function (_React$Component) {
         }, {
           key: "componentDidUpdate",
           value: function componentDidUpdate() {
-            if (this.oldMatch !== this.props.match) {
-              this.oldMatch = this.props.match;
-              this.setup();
-            }
+            this.setup();
           }
         }, {
           key: "setup",
           value: function setup() {
             var _this2 = this;
+
+            if (this.oldHref === this.props.match.url) {
+              return;
+            }
+
+            this.oldHref = this.props.match.url;
 
             if (resolve) {
               if (store && typeof store.subscribe === 'function') {
@@ -469,7 +474,7 @@ function (_React$Component) {
               });
             }
 
-            this.props.onEnter(store, this.props);
+            onEnter(store, this.props);
           }
           /**
            * @memberof Route
@@ -510,7 +515,7 @@ function (_React$Component) {
               // catch all the promise rejections and execute the onReject handler
               // take the result of the handler for use in rendering the component.
               return p["catch"](function (reason) {
-                return _this3.props.onReject(reason, resolveKeys[i], _this3.props);
+                return onReject(reason, resolveKeys[i], _this3.props);
               });
             })));
             this.promiseWaiting.then(function (values) {
@@ -556,10 +561,8 @@ function (_React$Component) {
       }(external_react_default.a.Component);
 
       var ResolveWithSearch = withSearch_withSearch(Object(external_react_router_dom_["withRouter"])(Resolver), searchOptions);
-      return external_react_default.a.createElement(external_react_router_dom_["Route"], _extends({}, ownProps, {
-        render: function render(props) {
-          return external_react_default.a.createElement(ResolveWithSearch, _objectSpread({}, ownProps, {}, props));
-        }
+      return external_react_default.a.createElement(external_react_router_dom_["Route"], _extends({}, _objectSpread({}, ownProps), {
+        component: ResolveWithSearch
       }));
     }
   }]);
