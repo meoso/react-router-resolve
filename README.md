@@ -19,6 +19,13 @@
 <dd></dd>
 </dl>
 
+## Members
+
+<dl>
+<dt><a href="#makeCancelable">makeCancelable</a> ⇒ <code>Promise</code></dt>
+<dd></dd>
+</dl>
+
 ## Functions
 
 <dl>
@@ -400,6 +407,17 @@ automatically redirect to the defaultRoute specified. Default is undefined.
     <App/>
 </BrowserRouter>,
 ```
+<a name="makeCancelable"></a>
+
+## makeCancelable ⇒ <code>Promise</code>
+**Kind**: global variable  
+**Returns**: <code>Promise</code> - a new promise decorated with the method tryCancel which will
+cancel the original promise if it is not done resolving or rejecting  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| promise | <code>Promise</code> | promise to make cancellable |
+
 <a name="withR3Options"></a>
 
 ## withR3Options(WrappedRouter)

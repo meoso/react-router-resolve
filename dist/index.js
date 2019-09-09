@@ -245,6 +245,36 @@ var toParams = function toParams(str) {
   });
   return params;
 };
+/**
+ * @name makeCancelable
+ * @param {Promise} promise promise to make cancellable
+ * @returns {Promise} a new promise decorated with the method tryCancel which will
+ * cancel the original promise if it is not done resolving or rejecting
+ */
+
+
+var makeCancelable = function makeCancelable(promise) {
+  var cancelReject;
+  var done = false;
+  var cancelablePromise = new Promise(function (resolve, reject) {
+    cancelReject = reject;
+    Promise.resolve(promise).then(function (reason) {
+      done = true;
+      resolve(reason);
+    })["catch"](function (reason) {
+      done = true;
+      reject(reason);
+    });
+  });
+
+  cancelablePromise.tryCancel = function () {
+    if (!done) cancelReject({
+      canceled: true
+    });
+  };
+
+  return cancelablePromise;
+};
 
 
 // CONCATENATED MODULE: ./src/withSearch.jsx
@@ -297,6 +327,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
 
 
 
@@ -409,6 +440,19 @@ function (_React$Component) {
         _createClass(Resolver, [{
           key: "componentDidMount",
           value: function componentDidMount() {
+            this.setup();
+          }
+        }, {
+          key: "componentDidUpdate",
+          value: function componentDidUpdate() {
+            if (this.oldMatch !== this.props.match) {
+              this.oldMatch = this.props.match;
+              this.setup();
+            }
+          }
+        }, {
+          key: "setup",
+          value: function setup() {
             var _this2 = this;
 
             if (resolve) {
@@ -442,6 +486,11 @@ function (_React$Component) {
           value: function waitForResolve() {
             var _this3 = this;
 
+            if (this.promiseWaiting) {
+              this.promiseWaiting.tryCancel();
+              this.promiseWaiting = null;
+            }
+
             var initialState = store && store.getState ? store.getState() : {};
             var resolving = [];
             var resolveKeys = Object.keys(resolve);
@@ -457,13 +506,14 @@ function (_React$Component) {
               var prom = Promise.resolve(_resolveFn(initialState, _this3.props));
               resolving.push(prom);
             });
-            Promise.all(resolving.map(function (p, i) {
+            this.promiseWaiting = makeCancelable(Promise.all(resolving.map(function (p, i) {
               // catch all the promise rejections and execute the onReject handler
               // take the result of the handler for use in rendering the component.
               return p["catch"](function (reason) {
                 return _this3.props.onReject(reason, resolveKeys[i], _this3.props);
               });
-            })).then(function (values) {
+            })));
+            this.promiseWaiting.then(function (values) {
               var newState = _objectSpread({}, initialState, {}, values.reduce(function (acc, val, i) {
                 acc[resolveKeys[i]] = val;
                 return acc;
@@ -476,6 +526,13 @@ function (_React$Component) {
               _this3.setState({
                 resolved: newState
               });
+            })["catch"](function (_ref) {
+              var canceled = _ref.canceled,
+                  reason = _objectWithoutProperties(_ref, ["canceled"]);
+
+              if (!canceled) {
+                return Promise.reject(reason);
+              }
             });
           }
           /**
