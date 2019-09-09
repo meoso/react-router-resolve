@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Route, withRouter } from 'react-router-dom';
 import { withSearch } from './withSearch';
+import { makeCancelable } from './utils';
 
 /**
  * @class Route
@@ -69,6 +70,7 @@ class ResolveRoute extends React.Component {
                     resolved: undefined
                 };
             }
+
             /**
              * @memberof Route
              * @description internal method that sets up the subscription to the store if available
@@ -76,6 +78,17 @@ class ResolveRoute extends React.Component {
              * Also triggers the "onEnter" function property.
              */
             componentDidMount() {
+                this.setup();
+            }
+
+            componentDidUpdate() {
+                if (this.oldMatch !== this.props.match) {
+                    this.oldMatch = this.props.match;
+                    this.setup();
+                }
+            }
+
+            setup() {
                 if (resolve) {
                     if (store && typeof store.subscribe === 'function') {
                         store.subscribe(() => {
@@ -89,6 +102,7 @@ class ResolveRoute extends React.Component {
                 }
                 this.props.onEnter(store, this.props);
             }
+
             /**
              * @memberof Route
              * @description internal method that gets the existing state from the context store.
@@ -99,6 +113,10 @@ class ResolveRoute extends React.Component {
              * triggers the internal render function.
              */
             waitForResolve() {
+                if (this.promiseWaiting) {
+                    this.promiseWaiting.tryCancel();
+                    this.promiseWaiting = null;
+                }
                 const initialState = (store && store.getState) ? store.getState() : {};
                 const resolving = [];
                 const resolveKeys = Object.keys(resolve);
@@ -110,11 +128,12 @@ class ResolveRoute extends React.Component {
                     const prom = Promise.resolve(resolveFn(initialState, this.props));
                     resolving.push(prom);
                 });
-                Promise.all(resolving.map((p, i) => {
+                this.promiseWaiting = makeCancelable(Promise.all(resolving.map((p, i) => {
                     // catch all the promise rejections and execute the onReject handler
                     // take the result of the handler for use in rendering the component.
                     return p.catch((reason) => this.props.onReject(reason, resolveKeys[i], this.props));
-                })).then((values) => {
+                })));
+                this.promiseWaiting.then((values) => {
                     const newState = { ...initialState, ...values.reduce((acc, val, i) => {
                         acc[resolveKeys[i]] = val;
                         return acc;
@@ -123,6 +142,10 @@ class ResolveRoute extends React.Component {
                         store.setState(newState);
                     }
                     this.setState({ resolved: newState });
+                }).catch(({ canceled, ...reason }) => {
+                    if (!canceled) {
+                        return Promise.reject(reason);
+                    }
                 });
             }
             /**

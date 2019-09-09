@@ -68,6 +68,41 @@ describe("ResolverRoute", () => {
             expect(renderedElement.innerHTML).toBe("<div>fake content LIT, BRO<span>SWOL</span></div>");
         });
     });
+
+    describe('when a component is mounted multiple times before resolving due to quickly changing routes', () => {
+        let renderedElement, resolvedCount, renderCount;
+        beforeEach((done) => {
+            resolvedCount = 0;
+            renderCount = 0;
+            renderedElement = renderRoute(ResolveRoute, {
+                resolve: {
+                    myNamingIs: () => "LIT, BRO",
+                    myCodeIs: (state, { match }) => new Promise((resolve, reject) => {
+                        setTimeout(() => {
+                            if (++resolvedCount > 1) {
+                                resolve(match.params.id);
+                                done();
+                            }
+                        }, 250);
+                    })
+                },
+                path: "/:id",
+                render: ({ myNamingIs, myCodeIs }) => {
+                    renderCount++;
+                    return <div>fake content {myNamingIs}<span>{myCodeIs}</span></div>;
+                }
+            });
+            renderedElement.history.push('/foo');
+            renderedElement.history.push('/bar');
+        });
+
+        it("renders the result of the render prop 1 time, attempts resolution twice due to the original cancelled promise", () => {
+            expect(resolvedCount).toBe(2);
+            expect(renderCount).toBe(1);
+            expect(renderedElement.innerHTML).toBe("<div>fake content LIT, BRO<span>bar</span></div>");
+        });
+    });
+
     describe('when a promise resolution in resolve is rejected.', () => {
         let resolveFactories, litError, swolError;
         beforeEach(() => {

@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import ReactTestUtils from 'react-dom/test-utils'; // ES6
 import TestRenderer from 'react-test-renderer'; // ES6
 import ShallowRenderer from 'react-test-renderer/shallow';
-import { StaticRouter } from '../src/Router';
+import { Router } from '../src/Router';
 import { createBrowserHistory } from "history";
 
 let testRenderContainer, renderedComponent;
@@ -36,15 +36,17 @@ global.renderRouter = (Component, props) => {
 global.renderRoute = (Component, props) => {
     setupRender();
     // Test first render and componentDidMount
+    const customHistory = createBrowserHistory();
     ReactTestUtils.act(() => {
-        ReactDOM.render(<StaticRouter>
+        ReactDOM.render(<Router history={customHistory}>
             <div id="test-container">
                 <Component {...props} />
             </div>
-        </StaticRouter>, testRenderContainer);
+        </Router>, testRenderContainer);
     });
-
-    return document.getElementById('test-container');
+    const element = document.getElementById('test-container');
+    element.history = customHistory;
+    return element;
 };
 
 global.testRender = (Component, props) => {

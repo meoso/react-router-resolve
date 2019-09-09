@@ -93,8 +93,36 @@ const toParams = (str, options = {}) => {
     return params;
 };
 
+/**
+ * @name makeCancelable
+ * @param {Promise} promise promise to make cancellable
+ * @returns {Promise} a new promise decorated with the method tryCancel which will
+ * cancel the original promise if it is not done resolving or rejecting
+ */
+const makeCancelable = promise => {
+    let cancelReject;
+    let done = false;
+    const cancelablePromise = new Promise((resolve, reject) => {
+        cancelReject = reject;
+        Promise.resolve(promise)
+            .then((reason) => {
+                done = true;
+                resolve(reason);
+            })
+            .catch((reason) => {
+                done = true;
+                reject(reason);
+            });
+    });
+    cancelablePromise.tryCancel = () => {
+        if (!done) cancelReject({ canceled: true });
+    };
+    return cancelablePromise;
+};
+
 export {
     toParams,
     arrayParser,
-    parseBool
+    parseBool,
+    makeCancelable
 };
