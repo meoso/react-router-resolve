@@ -416,7 +416,7 @@ cancel the original promise if it is not done resolving or rejecting
 
 | Param | Type | Description |
 | --- | --- | --- |
-| promise | <code>Promise</code> | promise to make cancellable |
+| promiseToWrap | <code>Promise</code> | promise to make cancellable |
 
 <a name="withR3Options"></a>
 

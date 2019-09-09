@@ -95,16 +95,16 @@ const toParams = (str, options = {}) => {
 
 /**
  * @name makeCancelable
- * @param {Promise} promise promise to make cancellable
+ * @param {Promise} promiseToWrap The promise to make cancellable
  * @returns {Promise} a new promise decorated with the method tryCancel which will
  * cancel the original promise if it is not done resolving or rejecting
  */
-const makeCancelable = promise => {
+const makeCancelable = promiseToWrap => {
     let cancelReject;
     let done = false;
     const cancelablePromise = new Promise((resolve, reject) => {
         cancelReject = reject;
-        Promise.resolve(promise)
+        Promise.resolve(promiseToWrap)
             .then((reason) => {
                 done = true;
                 resolve(reason);

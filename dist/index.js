@@ -247,18 +247,18 @@ var toParams = function toParams(str) {
 };
 /**
  * @name makeCancelable
- * @param {Promise} promise promise to make cancellable
+ * @param {Promise} promiseToWrap The promise to make cancellable
  * @returns {Promise} a new promise decorated with the method tryCancel which will
  * cancel the original promise if it is not done resolving or rejecting
  */
 
 
-var makeCancelable = function makeCancelable(promise) {
+var makeCancelable = function makeCancelable(promiseToWrap) {
   var cancelReject;
   var done = false;
   var cancelablePromise = new Promise(function (resolve, reject) {
     cancelReject = reject;
-    Promise.resolve(promise).then(function (reason) {
+    Promise.resolve(promiseToWrap).then(function (reason) {
       done = true;
       resolve(reason);
     })["catch"](function (reason) {
