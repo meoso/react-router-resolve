@@ -454,11 +454,14 @@ function (_React$Component) {
           value: function setup() {
             var _this2 = this;
 
-            if (this.oldHref === this.props.match.url) {
+            var location = this.props.location;
+            var nextUrl = "".concat(location.pathname).concat(location.search);
+
+            if (this.oldHref === nextUrl) {
               return;
             }
 
-            this.oldHref = this.props.match.url;
+            this.oldHref = nextUrl;
 
             if (resolve) {
               if (store && typeof store.subscribe === 'function') {
@@ -581,6 +584,7 @@ ResolverRoute_ResolveRoute.contextTypes = {
   store: external_prop_types_default.a.object
 };
 ResolverRoute_ResolveRoute.propTypes = {
+  location: external_prop_types_default.a.object,
   children: external_prop_types_default.a.oneOfType([external_prop_types_default.a.node, external_prop_types_default.a.func]),
 
   /**

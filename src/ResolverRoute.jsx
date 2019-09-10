@@ -86,10 +86,12 @@ class ResolveRoute extends React.Component {
             }
 
             setup() {
-                if (this.oldHref === this.props.match.url) {
+                const { location } = this.props;
+                const nextUrl = `${location.pathname}${location.search}`;
+                if (this.oldHref === nextUrl) {
                     return;
                 }
-                this.oldHref = this.props.match.url;
+                this.oldHref = nextUrl;
                 if (resolve) {
                     if (store && typeof store.subscribe === 'function') {
                         store.subscribe(() => {
@@ -185,7 +187,7 @@ ResolveRoute.contextTypes = {
 };
 
 ResolveRoute.propTypes = {
-
+    location: PropTypes.object,
     children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
     /**
      * @memberof Route
