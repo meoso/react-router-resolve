@@ -92,7 +92,8 @@ describe("ResolverRoute", () => {
                     return <div>fake content {myNamingIs}<span>{myCodeIs}</span></div>;
                 }
             });
-            renderedElement.history.push('/foo');
+            renderedElement.history.push('/foo?hello=world');
+            renderedElement.history.push('/foo?x=y');
             renderedElement.history.push('/bar');
         });
 
@@ -100,6 +101,39 @@ describe("ResolverRoute", () => {
             expect(resolvedCount).toBe(2);
             expect(renderCount).toBe(1);
             expect(renderedElement.innerHTML).toBe("<div>fake content LIT, BRO<span>bar</span></div>");
+        });
+    });
+
+
+    describe('when the resolveOnSearch property is set to true and the search changes', () => {
+        let renderedElement, resolvedCount, renderCount;
+        beforeEach(() => {
+            resolvedCount = 0;
+            renderCount = 0;
+            renderedElement = renderRoute(ResolveRoute, {
+                resolveOnSearch: true,
+                resolve: {
+                    myNamingIs: () => "LIT, BRO",
+                    myCodeIs: (state, { match }) => {
+                        resolvedCount++;
+                        return "factory";
+                    }
+                },
+                path: "/foo",
+                render: ({ myNamingIs, myCodeIs }) => {
+                    renderCount++;
+                    return <div>fake content {myNamingIs}<span>{myCodeIs}</span></div>;
+                }
+            });
+            renderedElement.history.push('/foo?hello=world');
+            renderedElement.history.push('/foo?hello=world');
+            renderedElement.history.push('/foo?x=y');
+        });
+
+        it("re-resolve the resolve factories twice and render once", () => {
+            expect(resolvedCount).toBe(2);
+            expect(renderCount).toBe(1);
+            expect(renderedElement.innerHTML).toBe("<div>fake content LIT, BRO<span>factory</span></div>");
         });
     });
 

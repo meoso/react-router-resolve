@@ -372,6 +372,7 @@ defaultRoute and ensureTrailingSlash options
 
 * [Router](#Router) ⇐ <code>ReactRouter:Router</code>
     * [new Router()](#new_Router_new)
+    * [.resolveOnSearch](#Router.resolveOnSearch)
     * [.ensureTrailingSlash](#Router.ensureTrailingSlash)
     * [.defaultRoute](#Router.defaultRoute)
 
@@ -381,6 +382,19 @@ defaultRoute and ensureTrailingSlash options
 Wrapper for React Router's base Router component that provides
 defaultRoute and ensureTrailingSlash options
 
+<a name="Router.resolveOnSearch"></a>
+
+### Router.resolveOnSearch
+Tells the route to re-resolve and re-render the component when the
+URL search parameters change. Default is false
+
+**Kind**: static property of [<code>Router</code>](#Router)  
+**Example**  
+```jsx
+<BrowserRouter resolveOnSearch={true} >
+    <App/>
+</BrowserRouter>,
+```
 <a name="Router.ensureTrailingSlash"></a>
 
 ### Router.ensureTrailingSlash
@@ -416,7 +430,7 @@ cancel the original promise if it is not done resolving or rejecting
 
 | Param | Type | Description |
 | --- | --- | --- |
-| promiseToWrap | <code>Promise</code> | promise to make cancellable |
+| promiseToWrap | <code>Promise</code> | The promise to make cancellable |
 
 <a name="withR3Options"></a>
 

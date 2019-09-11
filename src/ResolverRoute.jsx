@@ -61,7 +61,17 @@ import { makeCancelable } from './utils';
 class ResolveRoute extends React.Component {
     render() {
         const store = this.context.store || this.props.store;
-        const { resolve, interstitial, component, render, searchOptions, onEnter, onReject, ...ownProps } = this.props;
+        const {
+            resolve,
+            interstitial,
+            component,
+            render,
+            searchOptions,
+            resolveOnSearch,
+            onEnter,
+            onReject,
+            ...ownProps
+        } = this.props;
         class Resolver extends React.Component {
             constructor(self) {
                 super(self);
@@ -87,7 +97,7 @@ class ResolveRoute extends React.Component {
 
             setup() {
                 const { location } = this.props;
-                const nextUrl = `${location.pathname}${location.search}`;
+                const nextUrl = `${location.pathname}${resolveOnSearch ? location.search : ''}`;
                 if (this.oldHref === nextUrl) {
                     return;
                 }
@@ -179,7 +189,8 @@ class ResolveRoute extends React.Component {
 ResolveRoute.defaultProps = {
     interstitial: () => '',
     onEnter: () => {},
-    onReject: () => {}
+    onReject: () => {},
+    resolveOnSearch: false
 };
 
 ResolveRoute.contextTypes = {
@@ -311,7 +322,19 @@ ResolveRoute.propTypes = {
      *             </div>);
      * }} />
      */
-    searchOptions: PropTypes.object
+    searchOptions: PropTypes.object,
+    /**
+     * @name resolveOnSearch
+     * @memberof Router
+     * @description Tells the route to re-resolve and re-render the component when the
+     * URL search parameters change. Default is false
+     *
+     * @example @lang jsx
+     * <BrowserRouter resolveOnSearch={true} >
+     *     <App/>
+     * </BrowserRouter>,
+     */
+    resolveOnSearch: PropTypes.bool
 };
 
 export default ResolveRoute;

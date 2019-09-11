@@ -410,9 +410,10 @@ function (_React$Component) {
           component = _this$props.component,
           _render = _this$props.render,
           searchOptions = _this$props.searchOptions,
+          resolveOnSearch = _this$props.resolveOnSearch,
           onEnter = _this$props.onEnter,
           onReject = _this$props.onReject,
-          ownProps = _objectWithoutProperties(_this$props, ["resolve", "interstitial", "component", "render", "searchOptions", "onEnter", "onReject"]);
+          ownProps = _objectWithoutProperties(_this$props, ["resolve", "interstitial", "component", "render", "searchOptions", "resolveOnSearch", "onEnter", "onReject"]);
 
       var Resolver =
       /*#__PURE__*/
@@ -455,7 +456,7 @@ function (_React$Component) {
             var _this2 = this;
 
             var location = this.props.location;
-            var nextUrl = "".concat(location.pathname).concat(location.search);
+            var nextUrl = "".concat(location.pathname).concat(resolveOnSearch ? location.search : '');
 
             if (this.oldHref === nextUrl) {
               return;
@@ -578,7 +579,8 @@ ResolverRoute_ResolveRoute.defaultProps = {
     return '';
   },
   onEnter: function onEnter() {},
-  onReject: function onReject() {}
+  onReject: function onReject() {},
+  resolveOnSearch: false
 };
 ResolverRoute_ResolveRoute.contextTypes = {
   store: external_prop_types_default.a.object
@@ -716,7 +718,20 @@ ResolverRoute_ResolveRoute.propTypes = {
    *             </div>);
    * }} />
    */
-  searchOptions: external_prop_types_default.a.object
+  searchOptions: external_prop_types_default.a.object,
+
+  /**
+   * @name resolveOnSearch
+   * @memberof Router
+   * @description Tells the route to re-resolve and re-render the component when the
+   * URL search parameters change. Default is false
+   *
+   * @example @lang jsx
+   * <BrowserRouter resolveOnSearch={true} >
+   *     <App/>
+   * </BrowserRouter>,
+   */
+  resolveOnSearch: external_prop_types_default.a.bool
 };
 /* harmony default export */ var ResolverRoute = (ResolverRoute_ResolveRoute);
 // CONCATENATED MODULE: ./src/Link.jsx
