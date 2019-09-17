@@ -19,13 +19,6 @@
 <dd></dd>
 </dl>
 
-## Members
-
-<dl>
-<dt><a href="#makeCancelable">makeCancelable</a> ⇒ <code>Promise</code></dt>
-<dd></dd>
-</dl>
-
 ## Functions
 
 <dl>
@@ -50,6 +43,8 @@ in <a href="https://docs.microsoft.com/en-us/previous-versions/iis/6.0-sdk/ms524
 <dd><p>Converts URL parameters to a Object collection of key/value pairs
 Decodes encoded url characters to back to normal strings.</p>
 </dd>
+<dt><a href="#makeCancelable">makeCancelable(promiseToWrap)</a> ⇒ <code>Promise</code></dt>
+<dd></dd>
 </dl>
 
 <a name="Redirect"></a>
@@ -93,6 +88,7 @@ TODO: implement this feature
     * [.render](#Route.render)
     * [.interstitial](#Route.interstitial)
     * [.searchOptions](#Route.searchOptions)
+    * [.resolveOnSearch](#Route.resolveOnSearch)
     * [.Resolver#componentDidMount()](#Route.Resolver+componentDidMount)
     * [.Resolver#waitForResolve()](#Route.Resolver+waitForResolve)
     * [.Resolver#render()](#Route.Resolver+render)
@@ -114,6 +110,8 @@ for standard options documentation
         num: parseInt,
         edit: parseBool
     }}
+    // re-resolve the route when search parameters change. default is false.
+    resolveOnSearch={true}
     // onEnter triggers when the route is activated by a url match.
     onEnter={(store) => {
         // in this example, we are triggering a redux action, but you can do anything you want.
@@ -291,6 +289,19 @@ render={({ match }) => {
             </div>);
 }} />
 ```
+<a name="Route.resolveOnSearch"></a>
+
+### Route.resolveOnSearch
+Tells the route to re-resolve and re-render the component when the
+URL search parameters change. Default is false
+
+**Kind**: static property of [<code>Route</code>](#Route)  
+**Example**  
+```jsx
+<BrowserRouter resolveOnSearch={true} >
+    <App/>
+</BrowserRouter>,
+```
 <a name="Route.Resolver+componentDidMount"></a>
 
 ### Route.Resolver#componentDidMount()
@@ -372,7 +383,6 @@ defaultRoute and ensureTrailingSlash options
 
 * [Router](#Router) ⇐ <code>ReactRouter:Router</code>
     * [new Router()](#new_Router_new)
-    * [.resolveOnSearch](#Router.resolveOnSearch)
     * [.ensureTrailingSlash](#Router.ensureTrailingSlash)
     * [.defaultRoute](#Router.defaultRoute)
 
@@ -382,19 +392,6 @@ defaultRoute and ensureTrailingSlash options
 Wrapper for React Router's base Router component that provides
 defaultRoute and ensureTrailingSlash options
 
-<a name="Router.resolveOnSearch"></a>
-
-### Router.resolveOnSearch
-Tells the route to re-resolve and re-render the component when the
-URL search parameters change. Default is false
-
-**Kind**: static property of [<code>Router</code>](#Router)  
-**Example**  
-```jsx
-<BrowserRouter resolveOnSearch={true} >
-    <App/>
-</BrowserRouter>,
-```
 <a name="Router.ensureTrailingSlash"></a>
 
 ### Router.ensureTrailingSlash
@@ -421,17 +418,6 @@ automatically redirect to the defaultRoute specified. Default is undefined.
     <App/>
 </BrowserRouter>,
 ```
-<a name="makeCancelable"></a>
-
-## makeCancelable ⇒ <code>Promise</code>
-**Kind**: global variable  
-**Returns**: <code>Promise</code> - a new promise decorated with the method tryCancel which will
-cancel the original promise if it is not done resolving or rejecting  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| promiseToWrap | <code>Promise</code> | The promise to make cancellable |
-
 <a name="withR3Options"></a>
 
 ## withR3Options(WrappedRouter)
@@ -545,3 +531,14 @@ let paramsObject = toParams('?intvals=1&intvals=2&intvals=3');
 
 console.log(paramsObject) // { intvals: [ "1", "2", "3" ] }
 ```
+<a name="makeCancelable"></a>
+
+## makeCancelable(promiseToWrap) ⇒ <code>Promise</code>
+**Kind**: global function  
+**Returns**: <code>Promise</code> - a new promise decorated with the method tryCancel which will
+cancel the original promise if it is not done resolving or rejecting  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| promiseToWrap | <code>Promise</code> | The promise to make cancellable |
+

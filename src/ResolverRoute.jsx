@@ -20,6 +20,8 @@ import { makeCancelable } from './utils';
  *         num: parseInt,
  *         edit: parseBool
  *     }}
+ *     // re-resolve the route when search parameters change. default is false.
+ *     resolveOnSearch={true}
  *     // onEnter triggers when the route is activated by a url match.
  *     onEnter={(store) => {
  *         // in this example, we are triggering a redux action, but you can do anything you want.
@@ -325,7 +327,7 @@ ResolveRoute.propTypes = {
     searchOptions: PropTypes.object,
     /**
      * @name resolveOnSearch
-     * @memberof Router
+     * @memberof Route
      * @description Tells the route to re-resolve and re-render the component when the
      * URL search parameters change. Default is false
      *

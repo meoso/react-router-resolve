@@ -94,7 +94,7 @@ const toParams = (str, options = {}) => {
 };
 
 /**
- * @name makeCancelable
+ * @function makeCancelable
  * @param {Promise} promiseToWrap The promise to make cancellable
  * @returns {Promise} a new promise decorated with the method tryCancel which will
  * cancel the original promise if it is not done resolving or rejecting
