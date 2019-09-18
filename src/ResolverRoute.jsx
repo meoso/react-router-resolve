@@ -97,6 +97,17 @@ class ResolveRoute extends React.Component {
                 this.setup();
             }
 
+            componentWillUnmount() {
+                this.cancelIfWaiting();
+            }
+
+            cancelIfWaiting() {
+                if (this.promiseWaiting) {
+                    this.promiseWaiting.tryCancel();
+                    this.promiseWaiting = null;
+                }
+            }
+
             setup() {
                 const { location } = this.props;
                 const nextUrl = `${location.pathname}${resolveOnSearch ? location.search : ''}`;
@@ -128,10 +139,7 @@ class ResolveRoute extends React.Component {
              * triggers the internal render function.
              */
             waitForResolve() {
-                if (this.promiseWaiting) {
-                    this.promiseWaiting.tryCancel();
-                    this.promiseWaiting = null;
-                }
+                this.cancelIfWaiting();
                 const initialState = (store && store.getState) ? store.getState() : {};
                 const resolving = [];
                 const resolveKeys = Object.keys(resolve);

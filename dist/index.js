@@ -246,7 +246,7 @@ var toParams = function toParams(str) {
   return params;
 };
 /**
- * @name makeCancelable
+ * @function makeCancelable
  * @param {Promise} promiseToWrap The promise to make cancellable
  * @returns {Promise} a new promise decorated with the method tryCancel which will
  * cancel the original promise if it is not done resolving or rejecting
@@ -349,6 +349,8 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
  *         num: parseInt,
  *         edit: parseBool
  *     }}
+ *     // re-resolve the route when search parameters change. default is false.
+ *     resolveOnSearch={true}
  *     // onEnter triggers when the route is activated by a url match.
  *     onEnter={(store) => {
  *         // in this example, we are triggering a redux action, but you can do anything you want.
@@ -451,6 +453,19 @@ function (_React$Component) {
             this.setup();
           }
         }, {
+          key: "componentWillUnmount",
+          value: function componentWillUnmount() {
+            this.cancelIfWaiting();
+          }
+        }, {
+          key: "cancelIfWaiting",
+          value: function cancelIfWaiting() {
+            if (this.promiseWaiting) {
+              this.promiseWaiting.tryCancel();
+              this.promiseWaiting = null;
+            }
+          }
+        }, {
           key: "setup",
           value: function setup() {
             var _this2 = this;
@@ -495,11 +510,7 @@ function (_React$Component) {
           value: function waitForResolve() {
             var _this3 = this;
 
-            if (this.promiseWaiting) {
-              this.promiseWaiting.tryCancel();
-              this.promiseWaiting = null;
-            }
-
+            this.cancelIfWaiting();
             var initialState = store && store.getState ? store.getState() : {};
             var resolving = [];
             var resolveKeys = Object.keys(resolve);
@@ -722,7 +733,7 @@ ResolverRoute_ResolveRoute.propTypes = {
 
   /**
    * @name resolveOnSearch
-   * @memberof Router
+   * @memberof Route
    * @description Tells the route to re-resolve and re-render the component when the
    * URL search parameters change. Default is false
    *
