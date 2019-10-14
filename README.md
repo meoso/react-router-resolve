@@ -489,7 +489,8 @@ console.log(params) // {answer: 42}
 convenience method for boolean attributes.
 
 **Kind**: global function  
-**Returns**: <code>Boolean</code> - returns true if the val is "true" or the integer 1 ignoring case, otherwise, false.  
+**Returns**: <code>Boolean</code> - returns true if the val is "true" ignoring case and whitepsace,
+an integer or string 1, a float or string that is exactly 1.0, otherwise, false.  
 
 | Param | Type | Description |
 | --- | --- | --- |

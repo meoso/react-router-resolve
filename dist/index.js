@@ -188,17 +188,22 @@ var arrayParser = function arrayParser(val, key, params) {
 /**
  * @function parseBool
  * @param {String|Integer} val the value to parse as a boolean
- * @returns {Boolean} returns true if the val is "true" or the integer 1 ignoring case, otherwise, false.
+ * @returns {Boolean} returns true if the val is "true" ignoring case and whitepsace,
+ * an integer or string 1, a float or string that is exactly 1.0, otherwise, false.
  * @description convenience method for boolean attributes.
  */
 
 
 var parseBool = function parseBool(val) {
-  if (val !== 1 && val.toLowerCase() !== "true") {
-    return false;
+  if (typeof val === 'boolean') return val;
+  if (!val) return false;
+  var toParse = val.toString().toLowerCase().trim();
+
+  if (parseFloat(toParse) === 1 || toParse === "true") {
+    return true;
   }
 
-  return true;
+  return false;
 };
 /**
  * @function toParams
