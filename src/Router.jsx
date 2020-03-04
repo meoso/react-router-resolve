@@ -1,61 +1,76 @@
 /* eslint-disable react/prop-types */
-import React from 'react';
+import React from "react";
+import { PropTypes } from "prop-types";
+import Redirect from "./Redirect";
 import {
     BrowserRouter as BrowserRouterDom,
     MemoryRouter as MemoryRouterDom,
     StaticRouter as StaticRouterDom,
     HashRouter as HashRouterDom,
     Router as RouterDom,
-    Route
-} from 'react-router-dom';
-import { Redirect } from './Link';
-import { PropTypes } from 'prop-types';
+    Route,
+    useHistory,
+    useLocation,
+    useParams,
+    useRouteMatch
+} from "react-router-dom";
 
 /**
  * @function withR3Options
  * @param {Router} WrappedRouter @see Router @see BrowserRouter @see MemoryRouter @see StaticRouter @see HashRouter
  * @description Higher order component intended to wrap React Router's *Router components to extend the functionality
  */
-const withR3Options = (WrappedRouter) => {
+const withR3Options = WrappedRouter => {
     const ReactRouter = WrappedRouter;
     /**
-     * @name ensureTrailingSlash
-     * @memberof Router
-     * @description ensures a trailing slash is applied to the url. at runtime,
-     * browser url will be converted to always end in "/". default is false.
-     *
-     * @example @lang jsx
-     * <BrowserRouter ensureTrailingSlash={true} >
-     *     <App/>
-     * </BrowserRouter>,
-     */
+   * @name ensureTrailingSlash
+   * @memberof Router
+   * @description ensures a trailing slash is applied to the url. at runtime,
+   * browser url will be converted to always end in "/". default is false.
+   *
+   * @example @lang jsx
+   * <BrowserRouter ensureTrailingSlash={true} >
+   *     <App/>
+   * </BrowserRouter>,
+   */
     /**
-     * @name defaultRoute
-     * @memberof Router
-     * @description when the basename route is hit (default "/"), the browser will
-     * automatically redirect to the defaultRoute specified. Default is undefined.
-     *
-     * @example @lang jsx
-     * <BrowserRouter defaultRoute="/demo/world" >
-     *     <App/>
-     * </BrowserRouter>,
-     */
-    const RouterWrapper = ({ children, ensureTrailingSlash, defaultRoute, ...ownProps }) => {
+   * @name defaultRoute
+   * @memberof Router
+   * @description when the basename route is hit (default "/"), the browser will
+   * automatically redirect to the defaultRoute specified. Default is undefined.
+   *
+   * @example @lang jsx
+   * <BrowserRouter defaultRoute="/demo/world" >
+   *     <App/>
+   * </BrowserRouter>,
+   */
+    const RouterWrapper = ({
+        children,
+        ensureTrailingSlash,
+        defaultRoute,
+        ...ownProps
+    }) => {
         return (
             <ReactRouter {...ownProps}>
-                {defaultRoute &&
-                    <Route exact
+                {defaultRoute && (
+                    <Route
+                        exact
                         strict
                         path="/"
-                        render={() => <Redirect to={defaultRoute}/>} />}
-                {ensureTrailingSlash &&
-                    <Route exact
+                        render={() => <Redirect to={defaultRoute} />}
+                    />
+                )}
+                {ensureTrailingSlash && (
+                    <Route
+                        exact
                         strict
                         path="/:url*"
-                        render={props => <Redirect to={`${props.location.pathname}/`}/>} />}
+                        render={({ location }) => <Redirect to={`${location.pathname}/`} />}
+                    />
+                )}
 
                 {children}
-            </ ReactRouter>
+            </ReactRouter>
         );
     };
     RouterWrapper.propTypes = {
@@ -109,5 +124,9 @@ export {
     StaticRouter,
     HashRouter,
     Router,
-    withR3Options
+    withR3Options,
+    useHistory,
+    useLocation,
+    useParams,
+    useRouteMatch
 };

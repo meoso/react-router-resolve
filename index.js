@@ -16,10 +16,8 @@ import {
     parseBool
 } from './src/utils';
 
-import {
-    Redirect,
-    Link
-} from './src/Link';
+import Redirect from './src/Redirect';
+import Link from './src/Link';
 
 export {
     Route,

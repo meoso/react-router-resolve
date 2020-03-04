@@ -19,25 +19,27 @@ describe("Router", () => {
     });
     describe("when the ensureTrailingSlash property provided is true", () => {
         let renderedElement;
+        let fakeState = { someStateProp: 'someStateVal' };
         beforeEach(() => {
             renderedElement = renderRouter(Router, {
                 ensureTrailingSlash: true
             });
-            renderedElement.history.push('/immaroute');
+            renderedElement.history.push('/immaroute?some=params&another=param', fakeState);
         });
 
         test("redirects to /immaroute/ with the trailing slash", () => {
             expect(renderedElement.history.location.pathname).toBe('/immaroute/');
+            expect(renderedElement.history.location.state).toBe(fakeState);
         });
     });
     describe("when the ensureTrailingSlash property is not provided", () => {
         let renderedElement;
         beforeEach(() => {
             renderedElement = renderRouter(Router, {});
-            renderedElement.history.push('/differentRoute');
+            renderedElement.history.push('/differentRoute?some=params&another=param');
         });
 
-        test("redirects to /differentRoute without a trailing slash", () => {
+        test("redirects to /differentRoute without a trailing slash and maintains state", () => {
             expect(renderedElement.history.location.pathname).toBe('/differentRoute');
         });
     });

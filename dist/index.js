@@ -1,10 +1,10 @@
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("prop-types"), require("react"), require("react-router-dom"));
+		module.exports = factory(require("prop-types"), require("react-router-dom"), require("react"));
 	else if(typeof define === 'function' && define.amd)
-		define(["prop-types", "react", "react-router-dom"], factory);
+		define(["prop-types", "react-router-dom", "react"], factory);
 	else {
-		var a = typeof exports === 'object' ? factory(require("prop-types"), require("react"), require("react-router-dom")) : factory(root["prop-types"], root["react"], root["react-router-dom"]);
+		var a = typeof exports === 'object' ? factory(require("prop-types"), require("react-router-dom"), require("react")) : factory(root["prop-types"], root["react-router-dom"], root["react"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
 })(window, function(__WEBPACK_EXTERNAL_MODULE__0__, __WEBPACK_EXTERNAL_MODULE__1__, __WEBPACK_EXTERNAL_MODULE__2__) {
@@ -124,10 +124,25 @@ module.exports = __webpack_require__(4);
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+// ESM COMPAT FLAG
 __webpack_require__.r(__webpack_exports__);
 
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, "Route", function() { return /* reexport */ ResolverRoute; });
+__webpack_require__.d(__webpack_exports__, "BrowserRouter", function() { return /* reexport */ BrowserRouter; });
+__webpack_require__.d(__webpack_exports__, "MemoryRouter", function() { return /* reexport */ MemoryRouter; });
+__webpack_require__.d(__webpack_exports__, "StaticRouter", function() { return /* reexport */ StaticRouter; });
+__webpack_require__.d(__webpack_exports__, "HashRouter", function() { return /* reexport */ HashRouter; });
+__webpack_require__.d(__webpack_exports__, "Router", function() { return /* reexport */ Router; });
+__webpack_require__.d(__webpack_exports__, "Redirect", function() { return /* reexport */ src_Redirect; });
+__webpack_require__.d(__webpack_exports__, "Link", function() { return /* reexport */ src_Link; });
+__webpack_require__.d(__webpack_exports__, "toParams", function() { return /* reexport */ toParams; });
+__webpack_require__.d(__webpack_exports__, "arrayParser", function() { return /* reexport */ arrayParser; });
+__webpack_require__.d(__webpack_exports__, "parseBool", function() { return /* reexport */ parseBool; });
+__webpack_require__.d(__webpack_exports__, "withSearch", function() { return /* reexport */ withSearch; });
+
 // EXTERNAL MODULE: external "react"
-var external_react_ = __webpack_require__(1);
+var external_react_ = __webpack_require__(2);
 var external_react_default = /*#__PURE__*/__webpack_require__.n(external_react_);
 
 // EXTERNAL MODULE: external "prop-types"
@@ -135,7 +150,7 @@ var external_prop_types_ = __webpack_require__(0);
 var external_prop_types_default = /*#__PURE__*/__webpack_require__.n(external_prop_types_);
 
 // EXTERNAL MODULE: external "react-router-dom"
-var external_react_router_dom_ = __webpack_require__(2);
+var external_react_router_dom_ = __webpack_require__(1);
 
 // CONCATENATED MODULE: ./src/utils.js
 /**
@@ -170,8 +185,8 @@ var external_react_router_dom_ = __webpack_require__(2);
  * });
  * console.log(params) // {answer: 42}
  */
-var arrayParser = function arrayParser(val, key, params) {
-  var current = params[key];
+const arrayParser = (val, key, params) => {
+  let current = params[key];
 
   if (current) {
     if (!Array.isArray(current)) {
@@ -194,10 +209,10 @@ var arrayParser = function arrayParser(val, key, params) {
  */
 
 
-var parseBool = function parseBool(val) {
+const parseBool = val => {
   if (typeof val === 'boolean') return val;
   if (!val) return false;
-  var toParse = val.toString().toLowerCase().trim();
+  const toParse = val.toString().toLowerCase().trim();
 
   if (parseFloat(toParse) === 1 || toParse === "true") {
     return true;
@@ -231,20 +246,17 @@ var parseBool = function parseBool(val) {
  */
 
 
-var toParams = function toParams(str) {
-  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  var parts = str.split('?');
-  var queryString = parts[1] || '';
-  var params = {};
-  queryString.split('&').forEach(function (val) {
-    var innerParts = val.split('=');
+const toParams = (str, options = {}) => {
+  const parts = str.split('?');
+  const queryString = parts[1] || '';
+  const params = {};
+  queryString.split('&').forEach(val => {
+    const innerParts = val.split('=');
     if (innerParts.length !== 2) return;
-    var paramKey = decodeURIComponent(innerParts[0]);
-    var paramVal = decodeURIComponent(innerParts[1]);
+    const paramKey = decodeURIComponent(innerParts[0]);
+    const paramVal = decodeURIComponent(innerParts[1]);
 
-    var parser = options[paramKey] || function () {
-      return paramVal;
-    };
+    const parser = options[paramKey] || (() => paramVal);
 
     params[paramKey] = arrayParser(parser(paramVal, paramKey, params), paramKey, params);
   });
@@ -258,21 +270,21 @@ var toParams = function toParams(str) {
  */
 
 
-var makeCancelable = function makeCancelable(promiseToWrap) {
-  var cancelReject;
-  var done = false;
-  var cancelablePromise = new Promise(function (resolve, reject) {
+const makeCancelable = promiseToWrap => {
+  let cancelReject;
+  let done = false;
+  const cancelablePromise = new Promise((resolve, reject) => {
     cancelReject = reject;
-    Promise.resolve(promiseToWrap).then(function (reason) {
+    Promise.resolve(promiseToWrap).then(reason => {
       done = true;
       resolve(reason);
-    })["catch"](function (reason) {
+    }).catch(reason => {
       done = true;
       reject(reason);
     });
   });
 
-  cancelablePromise.tryCancel = function () {
+  cancelablePromise.tryCancel = () => {
     if (!done) cancelReject({
       canceled: true
     });
@@ -295,43 +307,25 @@ var makeCancelable = function makeCancelable(promiseToWrap) {
  * The result of @see toParams are made available as props.match.search.
  */
 
-var withSearch_withSearch = function withSearch(WrappedComponent, searchOptions) {
-  return Object(external_react_router_dom_["withRouter"])(function (props) {
-    var search = toParams(props.location.search, searchOptions);
+const withSearch = (WrappedComponent, searchOptions) => {
+  return Object(external_react_router_dom_["withRouter"])(props => {
+    const search = toParams(props.location.search, searchOptions);
     props.match.search = search;
     return external_react_default.a.createElement(WrappedComponent, props);
   });
 };
 // CONCATENATED MODULE: ./src/ResolverRoute.jsx
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
 
 function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 
 
@@ -395,207 +389,170 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
  *     }} />
  */
 
-var ResolverRoute_ResolveRoute =
-/*#__PURE__*/
-function (_React$Component) {
-  _inherits(ResolveRoute, _React$Component);
+class ResolverRoute_ResolveRoute extends external_react_default.a.Component {
+  render() {
+    const store = this.context.store || this.props.store;
 
-  function ResolveRoute() {
-    _classCallCheck(this, ResolveRoute);
-
-    return _possibleConstructorReturn(this, _getPrototypeOf(ResolveRoute).apply(this, arguments));
-  }
-
-  _createClass(ResolveRoute, [{
-    key: "render",
-    value: function render() {
-      var store = this.context.store || this.props.store;
-
-      var _this$props = this.props,
-          resolve = _this$props.resolve,
-          interstitial = _this$props.interstitial,
-          component = _this$props.component,
-          _render = _this$props.render,
-          searchOptions = _this$props.searchOptions,
-          resolveOnSearch = _this$props.resolveOnSearch,
-          onEnter = _this$props.onEnter,
-          onReject = _this$props.onReject,
+    const _this$props = this.props,
+          {
+      resolve,
+      interstitial,
+      component,
+      render,
+      searchOptions,
+      resolveOnSearch,
+      onEnter,
+      onReject
+    } = _this$props,
           ownProps = _objectWithoutProperties(_this$props, ["resolve", "interstitial", "component", "render", "searchOptions", "resolveOnSearch", "onEnter", "onReject"]);
 
-      var Resolver =
-      /*#__PURE__*/
-      function (_React$Component2) {
-        _inherits(Resolver, _React$Component2);
+    class Resolver extends external_react_default.a.Component {
+      constructor(self) {
+        super(self);
+        self = this;
+        this.state = {
+          resolved: undefined
+        };
+      }
+      /**
+       * @memberof Route
+       * @description internal method that sets up the subscription to the store if available
+       * and then waits for model reoslution before rendering the component
+       * Also triggers the "onEnter" function property.
+       */
 
-        function Resolver(self) {
-          var _this;
 
-          _classCallCheck(this, Resolver);
+      componentDidMount() {
+        this.setup();
+      }
 
-          _this = _possibleConstructorReturn(this, _getPrototypeOf(Resolver).call(this, self));
-          self = _assertThisInitialized(_this);
-          _this.state = {
-            resolved: undefined
-          };
-          return _this;
+      componentDidUpdate() {
+        this.setup();
+      }
+
+      componentWillUnmount() {
+        this.cancelIfWaiting();
+      }
+
+      cancelIfWaiting() {
+        if (this.promiseWaiting) {
+          this.promiseWaiting.tryCancel();
+          this.promiseWaiting = null;
         }
-        /**
-         * @memberof Route
-         * @description internal method that sets up the subscription to the store if available
-         * and then waits for model reoslution before rendering the component
-         * Also triggers the "onEnter" function property.
-         */
+      }
 
+      setup() {
+        const {
+          location
+        } = this.props;
+        const nextUrl = `${location.pathname}${resolveOnSearch ? location.search : ''}`;
 
-        _createClass(Resolver, [{
-          key: "componentDidMount",
-          value: function componentDidMount() {
-            this.setup();
-          }
-        }, {
-          key: "componentDidUpdate",
-          value: function componentDidUpdate() {
-            this.setup();
-          }
-        }, {
-          key: "componentWillUnmount",
-          value: function componentWillUnmount() {
-            this.cancelIfWaiting();
-          }
-        }, {
-          key: "cancelIfWaiting",
-          value: function cancelIfWaiting() {
-            if (this.promiseWaiting) {
-              this.promiseWaiting.tryCancel();
-              this.promiseWaiting = null;
-            }
-          }
-        }, {
-          key: "setup",
-          value: function setup() {
-            var _this2 = this;
+        if (this.oldHref === nextUrl) {
+          return;
+        }
 
-            var location = this.props.location;
-            var nextUrl = "".concat(location.pathname).concat(resolveOnSearch ? location.search : '');
+        this.oldHref = nextUrl;
 
-            if (this.oldHref === nextUrl) {
-              return;
-            }
-
-            this.oldHref = nextUrl;
-
-            if (resolve) {
-              if (store && typeof store.subscribe === 'function') {
-                store.subscribe(function () {
-                  _this2.waitForResolve();
-                });
-              } else {
-                this.waitForResolve();
-              }
-            } else {
-              this.setState({
-                resolved: {}
-              });
-            }
-
-            onEnter(store, this.props);
-          }
-          /**
-           * @memberof Route
-           * @description internal method that gets the existing state from the context store.
-           * Then, it iterates through the keys of the "resolve" property and, if necessary,
-           * converts them to a function that returns the value set for that key. Then, it resolves
-           * the result of those functions as promises. Once all the promises have resolved,
-           * it sets the internal state to the result of the newState via setState(), which
-           * triggers the internal render function.
-           */
-
-        }, {
-          key: "waitForResolve",
-          value: function waitForResolve() {
-            var _this3 = this;
-
-            this.cancelIfWaiting();
-            var initialState = store && store.getState ? store.getState() : {};
-            var resolving = [];
-            var resolveKeys = Object.keys(resolve);
-            resolveKeys.forEach(function (key) {
-              var _resolveFn = resolve[key];
-
-              if (typeof _resolveFn !== 'function') {
-                _resolveFn = function resolveFn() {
-                  return _resolveFn;
-                };
-              }
-
-              var prom = Promise.resolve(_resolveFn(initialState, _this3.props));
-              resolving.push(prom);
+        if (resolve) {
+          if (store && typeof store.subscribe === 'function') {
+            store.subscribe(() => {
+              this.waitForResolve();
             });
-            this.promiseWaiting = makeCancelable(Promise.all(resolving.map(function (p, i) {
-              // catch all the promise rejections and execute the onReject handler
-              // take the result of the handler for use in rendering the component.
-              return p["catch"](function (reason) {
-                return onReject(reason, resolveKeys[i], _this3.props);
-              });
-            })));
-            this.promiseWaiting.then(function (values) {
-              var newState = _objectSpread({}, initialState, {}, values.reduce(function (acc, val, i) {
-                acc[resolveKeys[i]] = val;
-                return acc;
-              }, {}));
-
-              if (store && typeof store.setState === 'function') {
-                store.setState(newState);
-              }
-
-              _this3.setState({
-                resolved: newState
-              });
-            })["catch"](function (_ref) {
-              var canceled = _ref.canceled,
-                  reason = _objectWithoutProperties(_ref, ["canceled"]);
-
-              if (!canceled) {
-                return Promise.reject(reason);
-              }
-            });
+          } else {
+            this.waitForResolve();
           }
-          /**
-           * @memberof Route
-           * @description internal method that renders wither the component from the
-           * render or component props, with render taking precedence. It then passes all the
-           * combined props and the resolved state as properties to the component
-           * and provides any children elements defined in the route declaration
-           * to the component to render as props.children.
-           */
+        } else {
+          this.setState({
+            resolved: {}
+          });
+        }
 
-        }, {
-          key: "render",
-          value: function render() {
-            var ComponentToRender = this.state.resolved ? _render || component : interstitial;
-            return external_react_default.a.createElement(ComponentToRender, _objectSpread({}, this.props, {}, this.state.resolved), this.props.children);
+        onEnter(store, this.props);
+      }
+      /**
+       * @memberof Route
+       * @description internal method that gets the existing state from the context store.
+       * Then, it iterates through the keys of the "resolve" property and, if necessary,
+       * converts them to a function that returns the value set for that key. Then, it resolves
+       * the result of those functions as promises. Once all the promises have resolved,
+       * it sets the internal state to the result of the newState via setState(), which
+       * triggers the internal render function.
+       */
+
+
+      waitForResolve() {
+        this.cancelIfWaiting();
+        const initialState = store && store.getState ? store.getState() : {};
+        const resolving = [];
+        const resolveKeys = Object.keys(resolve);
+        resolveKeys.forEach(key => {
+          let resolveFn = resolve[key];
+
+          if (typeof resolveFn !== 'function') {
+            resolveFn = () => resolveFn;
           }
-        }]);
 
-        return Resolver;
-      }(external_react_default.a.Component);
+          const prom = Promise.resolve(resolveFn(initialState, this.props));
+          resolving.push(prom);
+        });
+        this.promiseWaiting = makeCancelable(Promise.all(resolving.map((p, i) => {
+          // catch all the promise rejections and execute the onReject handler
+          // take the result of the handler for use in rendering the component.
+          return p.catch(reason => onReject(reason, resolveKeys[i], this.props));
+        })));
+        this.promiseWaiting.then(values => {
+          const newState = _objectSpread({}, initialState, {}, values.reduce((acc, val, i) => {
+            acc[resolveKeys[i]] = val;
+            return acc;
+          }, {}));
 
-      var ResolveWithSearch = withSearch_withSearch(Object(external_react_router_dom_["withRouter"])(Resolver), searchOptions);
-      return external_react_default.a.createElement(external_react_router_dom_["Route"], _extends({}, ownProps, {
-        component: ResolveWithSearch
-      }));
+          if (store && typeof store.setState === 'function') {
+            store.setState(newState);
+          }
+
+          this.setState({
+            resolved: newState
+          });
+        }).catch((_ref) => {
+          let {
+            canceled
+          } = _ref,
+              reason = _objectWithoutProperties(_ref, ["canceled"]);
+
+          if (!canceled) {
+            return Promise.reject(reason);
+          }
+        });
+      }
+      /**
+       * @memberof Route
+       * @description internal method that renders wither the component from the
+       * render or component props, with render taking precedence. It then passes all the
+       * combined props and the resolved state as properties to the component
+       * and provides any children elements defined in the route declaration
+       * to the component to render as props.children.
+       */
+
+
+      render() {
+        const ComponentToRender = this.state.resolved ? render || component : interstitial;
+        return external_react_default.a.createElement(ComponentToRender, _objectSpread({}, this.props, {}, this.state.resolved), this.props.children);
+      }
+
     }
-  }]);
 
-  return ResolveRoute;
-}(external_react_default.a.Component);
+    const ResolveWithSearch = withSearch(Object(external_react_router_dom_["withRouter"])(Resolver), searchOptions);
+    return external_react_default.a.createElement(external_react_router_dom_["Route"], _extends({}, ownProps, {
+      component: ResolveWithSearch
+    }));
+  }
+
+}
 
 ResolverRoute_ResolveRoute.defaultProps = {
-  interstitial: function interstitial() {
-    return '';
-  },
-  onEnter: function onEnter() {},
-  onReject: function onReject() {},
+  interstitial: () => '',
+  onEnter: () => {},
+  onReject: () => {},
   resolveOnSearch: false
 };
 ResolverRoute_ResolveRoute.contextTypes = {
@@ -750,12 +707,12 @@ ResolverRoute_ResolveRoute.propTypes = {
   resolveOnSearch: external_prop_types_default.a.bool
 };
 /* harmony default export */ var ResolverRoute = (ResolverRoute_ResolveRoute);
-// CONCATENATED MODULE: ./src/Link.jsx
-function Link_extends() { Link_extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return Link_extends.apply(this, arguments); }
+// CONCATENATED MODULE: ./src/Redirect.jsx
+function Redirect_extends() { Redirect_extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return Redirect_extends.apply(this, arguments); }
 
-function Link_objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = Link_objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+function Redirect_objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = Redirect_objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
 
-function Link_objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+function Redirect_objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
 
 
@@ -768,28 +725,30 @@ function Link_objectWithoutPropertiesLoose(source, excluded) { if (source == nul
  * [React Router Redirect]{@link https://reacttraining.com/react-router/web/api/Redirect}
  */
 
-var Redirect = withSearch_withSearch(function (_ref) {
-  var to = _ref.to,
-      props = Link_objectWithoutProperties(_ref, ["to"]);
+const Redirect = withSearch((_ref) => {
+  let {
+    to
+  } = _ref,
+      props = Redirect_objectWithoutProperties(_ref, ["to"]);
 
-  return external_react_default.a.createElement(external_react_router_dom_["Redirect"], Link_extends({}, props, {
-    to: "".concat(to).concat(props.location.search)
+  if (typeof to === 'string') {
+    to = {
+      pathname: to,
+      state: props.history.location.state
+    };
+  }
+
+  const paramSplit = to.pathname.split('?');
+
+  if (!paramSplit[0].endsWith('/')) {
+    to.pathname = paramSplit.join('/?');
+  }
+
+  return external_react_default.a.createElement(external_react_router_dom_["Redirect"], Redirect_extends({}, props, {
+    to: to
   }));
 });
-/**
- *
- * @class Link
- * @extends {ReactRouter:Link}
- * @description creates routable links using the React Router Link component that preserves
- * the existing query parameters or creates external anchors when given a FQDN url.
- * [React Router Link]{@link https://reacttraining.com/react-router/web/api/Link}
- * TODO: implement this feature
- */
-
-var Link = withSearch_withSearch(function (props) {
-  return external_react_default.a.createElement(external_react_router_dom_["Link"], props);
-});
-
+/* harmony default export */ var src_Redirect = (Redirect);
 // CONCATENATED MODULE: ./src/Router.jsx
 function Router_objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = Router_objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
 
@@ -806,56 +765,56 @@ function Router_objectWithoutPropertiesLoose(source, excluded) { if (source == n
  * @description Higher order component intended to wrap React Router's *Router components to extend the functionality
  */
 
-var Router_withR3Options = function withR3Options(WrappedRouter) {
-  var ReactRouter = WrappedRouter;
+const withR3Options = WrappedRouter => {
+  const ReactRouter = WrappedRouter;
   /**
-   * @name ensureTrailingSlash
-   * @memberof Router
-   * @description ensures a trailing slash is applied to the url. at runtime,
-   * browser url will be converted to always end in "/". default is false.
-   *
-   * @example @lang jsx
-   * <BrowserRouter ensureTrailingSlash={true} >
-   *     <App/>
-   * </BrowserRouter>,
-   */
+  * @name ensureTrailingSlash
+  * @memberof Router
+  * @description ensures a trailing slash is applied to the url. at runtime,
+  * browser url will be converted to always end in "/". default is false.
+  *
+  * @example @lang jsx
+  * <BrowserRouter ensureTrailingSlash={true} >
+  *     <App/>
+  * </BrowserRouter>,
+  */
 
   /**
-   * @name defaultRoute
-   * @memberof Router
-   * @description when the basename route is hit (default "/"), the browser will
-   * automatically redirect to the defaultRoute specified. Default is undefined.
-   *
-   * @example @lang jsx
-   * <BrowserRouter defaultRoute="/demo/world" >
-   *     <App/>
-   * </BrowserRouter>,
-   */
+  * @name defaultRoute
+  * @memberof Router
+  * @description when the basename route is hit (default "/"), the browser will
+  * automatically redirect to the defaultRoute specified. Default is undefined.
+  *
+  * @example @lang jsx
+  * <BrowserRouter defaultRoute="/demo/world" >
+  *     <App/>
+  * </BrowserRouter>,
+  */
 
-  var RouterWrapper = function RouterWrapper(_ref) {
-    var children = _ref.children,
-        ensureTrailingSlash = _ref.ensureTrailingSlash,
-        defaultRoute = _ref.defaultRoute,
+  const RouterWrapper = (_ref) => {
+    let {
+      children,
+      ensureTrailingSlash,
+      defaultRoute
+    } = _ref,
         ownProps = Router_objectWithoutProperties(_ref, ["children", "ensureTrailingSlash", "defaultRoute"]);
 
     return external_react_default.a.createElement(ReactRouter, ownProps, defaultRoute && external_react_default.a.createElement(external_react_router_dom_["Route"], {
       exact: true,
       strict: true,
       path: "/",
-      render: function render() {
-        return external_react_default.a.createElement(Redirect, {
-          to: defaultRoute
-        });
-      }
+      render: () => external_react_default.a.createElement(src_Redirect, {
+        to: defaultRoute
+      })
     }), ensureTrailingSlash && external_react_default.a.createElement(external_react_router_dom_["Route"], {
       exact: true,
       strict: true,
       path: "/:url*",
-      render: function render(props) {
-        return external_react_default.a.createElement(Redirect, {
-          to: "".concat(props.location.pathname, "/")
-        });
-      }
+      render: ({
+        location
+      }) => external_react_default.a.createElement(src_Redirect, {
+        to: `${location.pathname}/`
+      })
     }), children);
   };
 
@@ -876,7 +835,7 @@ var Router_withR3Options = function withR3Options(WrappedRouter) {
  */
 
 
-var BrowserRouter = Router_withR3Options(external_react_router_dom_["BrowserRouter"]);
+const BrowserRouter = withR3Options(external_react_router_dom_["BrowserRouter"]);
 /**
  * @class MemoryRouter
  * @extends ReactRouter:MemoryRouter
@@ -884,7 +843,7 @@ var BrowserRouter = Router_withR3Options(external_react_router_dom_["BrowserRout
  * defaultRoute and ensureTrailingSlash options
  */
 
-var MemoryRouter = Router_withR3Options(external_react_router_dom_["MemoryRouter"]);
+const MemoryRouter = withR3Options(external_react_router_dom_["MemoryRouter"]);
 /**
  * @class StaticRouter
  * @extends ReactRouter:StaticRouter
@@ -892,7 +851,7 @@ var MemoryRouter = Router_withR3Options(external_react_router_dom_["MemoryRouter
  * defaultRoute and ensureTrailingSlash options
  */
 
-var StaticRouter = Router_withR3Options(external_react_router_dom_["StaticRouter"]);
+const StaticRouter = withR3Options(external_react_router_dom_["StaticRouter"]);
 /**
  * @class HashRouter
  * @extends ReactRouter:HashRouter
@@ -900,7 +859,7 @@ var StaticRouter = Router_withR3Options(external_react_router_dom_["StaticRouter
  * defaultRoute and ensureTrailingSlash options
  */
 
-var HashRouter = Router_withR3Options(external_react_router_dom_["HashRouter"]);
+const HashRouter = withR3Options(external_react_router_dom_["HashRouter"]);
 /**
  * @class Router
  * @extends ReactRouter:Router
@@ -908,21 +867,28 @@ var HashRouter = Router_withR3Options(external_react_router_dom_["HashRouter"]);
  * defaultRoute and ensureTrailingSlash options
  */
 
-var Router = Router_withR3Options(external_react_router_dom_["Router"]);
+const Router = withR3Options(external_react_router_dom_["Router"]);
 
+// CONCATENATED MODULE: ./src/Link.jsx
+
+
+
+/**
+ *
+ * @class Link
+ * @extends {ReactRouter:Link}
+ * @description creates routable links using the React Router Link component that preserves
+ * the existing query parameters or creates external anchors when given a FQDN url.
+ * [React Router Link]{@link https://reacttraining.com/react-router/web/api/Link}
+ * TODO: implement this feature
+ */
+
+const Link = withSearch(props => {
+  return external_react_default.a.createElement(external_react_router_dom_["Link"], props);
+});
+/* harmony default export */ var src_Link = (Link);
 // CONCATENATED MODULE: ./index.js
-/* concated harmony reexport Route */__webpack_require__.d(__webpack_exports__, "Route", function() { return ResolverRoute; });
-/* concated harmony reexport BrowserRouter */__webpack_require__.d(__webpack_exports__, "BrowserRouter", function() { return BrowserRouter; });
-/* concated harmony reexport MemoryRouter */__webpack_require__.d(__webpack_exports__, "MemoryRouter", function() { return MemoryRouter; });
-/* concated harmony reexport StaticRouter */__webpack_require__.d(__webpack_exports__, "StaticRouter", function() { return StaticRouter; });
-/* concated harmony reexport HashRouter */__webpack_require__.d(__webpack_exports__, "HashRouter", function() { return HashRouter; });
-/* concated harmony reexport Router */__webpack_require__.d(__webpack_exports__, "Router", function() { return Router; });
-/* concated harmony reexport Redirect */__webpack_require__.d(__webpack_exports__, "Redirect", function() { return Redirect; });
-/* concated harmony reexport Link */__webpack_require__.d(__webpack_exports__, "Link", function() { return Link; });
-/* concated harmony reexport toParams */__webpack_require__.d(__webpack_exports__, "toParams", function() { return toParams; });
-/* concated harmony reexport arrayParser */__webpack_require__.d(__webpack_exports__, "arrayParser", function() { return arrayParser; });
-/* concated harmony reexport parseBool */__webpack_require__.d(__webpack_exports__, "parseBool", function() { return parseBool; });
-/* concated harmony reexport withSearch */__webpack_require__.d(__webpack_exports__, "withSearch", function() { return withSearch_withSearch; });
+
 
 
 

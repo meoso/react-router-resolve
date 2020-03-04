@@ -1,6 +1,6 @@
 {
   "name": "@mcklabs/react-router-resolve",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "React Router wrapper for resolving models to routes in a more sane way.",
   "main": "dist/index.js",
   "author": "timothy.sweet@mckesson.com",
@@ -14,35 +14,38 @@
     "registry": "https://tools.mckesson.com/artifactory/api/npm/mcklbs-release-repo/"
   },
   "devDependencies": {
-    "@babel/cli": "^7.4.4",
-    "@babel/core": "^7.4.5",
-    "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
-    "@babel/polyfill": "^7.4.4",
-    "@babel/preset-env": "^7.4.5",
-    "@babel/preset-react": "^7.0.0",
-    "@babel/preset-stage-0": "^7.0.0",
-    "@babel/register": "^7.4.4",
-    "babel-eslint": "^10.0.2",
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.8.6",
+    "@babel/plugin-proposal-object-rest-spread": "^7.8.3",
+    "@babel/polyfill": "^7.8.3",
+    "@babel/preset-env": "^7.8.6",
+    "@babel/preset-react": "^7.8.3",
+    "@babel/preset-stage-0": "^7.8.3",
+    "@babel/register": "^7.8.6",
+    "babel-eslint": "^10.1.0",
     "babel-loader": "^8.0.6",
-    "eslint": "^6.0.1",
+    "eslint": "^6.8.0",
     "eslint-config-babel": "^9.0.0",
     "eslint-config-google": "^0.13.0",
     "eslint-config-react": "^1.1.7",
-    "eslint-plugin-react": "^7.14.2",
-    "jest": "^24.8.0",
-    "jest-cli": "^24.8.0",
+    "eslint-plugin-react": "^7.18.3",
+    "jest": "^24.9.0",
+    "jest-cli": "^24.9.0",
     "jsdoc": "^3.6.3",
-    "jsdoc-to-markdown": "^5.0.0",
-    "react": "",
-    "react-dom": "",
-    "react-router-dom": "^5.0.1",
-    "react-test-renderer": "^16.9.0",
-    "webpack": "^4.35.2",
-    "webpack-cli": "^3.3.5",
-    "webpack-dev-server": "^3.7.2"
+    "jsdoc-to-markdown": "^5.0.3",
+    "react": "^16.13.0",
+    "react-dom": "^16.13.0",
+    "react-router-dom": "^5.1.2",
+    "react-test-renderer": "^16.13.0",
+    "webpack": "^4.42.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
   },
   "peerDependencies": {
-    "react-router": "^5.0.1"
+    "react-router": "^5.1.2"
   },
-  "dependencies": {}
+  "dependencies": {
+    "react": "^16.13.0",
+    "react-dom": "^16.13.0"
+  }
 }
