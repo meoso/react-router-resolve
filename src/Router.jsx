@@ -65,7 +65,14 @@ const withR3Options = WrappedRouter => {
                         exact
                         strict
                         path="/:url*"
-                        render={({ location }) => <Redirect to={`${location.pathname}/`} />}
+                        render={({ location }) => {
+                            let redirectTo = `${location.pathname}/`;
+                            const paramSplit = location.pathname.split('?');
+                            if (paramSplit.length > 1 && !paramSplit[0].endsWith('/')) {
+                                redirectTo = paramSplit.join('/?');
+                            }
+                            return <Redirect to={redirectTo} />;
+                        }}
                     />
                 )}
 

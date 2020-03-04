@@ -738,12 +738,6 @@ const Redirect = withSearch((_ref) => {
     };
   }
 
-  const paramSplit = to.pathname.split('?');
-
-  if (!paramSplit[0].endsWith('/')) {
-    to.pathname = paramSplit.join('/?');
-  }
-
   return external_react_default.a.createElement(external_react_router_dom_["Redirect"], Redirect_extends({}, props, {
     to: to
   }));
@@ -812,9 +806,18 @@ const withR3Options = WrappedRouter => {
       path: "/:url*",
       render: ({
         location
-      }) => external_react_default.a.createElement(src_Redirect, {
-        to: `${location.pathname}/`
-      })
+      }) => {
+        let redirectTo = `${location.pathname}/`;
+        const paramSplit = location.pathname.split('?');
+
+        if (paramSplit.length > 1 && !paramSplit[0].endsWith('/')) {
+          redirectTo = paramSplit.join('/?');
+        }
+
+        return external_react_default.a.createElement(src_Redirect, {
+          to: redirectTo
+        });
+      }
     }), children);
   };
 

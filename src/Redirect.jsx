@@ -18,10 +18,6 @@ const Redirect = withSearch(({ to, ...props }) => {
             state: props.history.location.state
         };
     }
-    const paramSplit = to.pathname.split('?');
-    if (!paramSplit[0].endsWith('/')) {
-        to.pathname = paramSplit.join('/?');
-    }
     return (<RedirectDom {...props} to={to}/>);
 });
 
